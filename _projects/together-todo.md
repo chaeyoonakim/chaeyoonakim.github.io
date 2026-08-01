@@ -2,7 +2,7 @@
 title: "Bilingual To-Do — Korean & English"
 period: "2026"
 context: "KUITA · Korean UK IT Association"
-github: "https://github.com/chaeyoonyunakim/together-todo"
+github: "https://github.com/chaeyoonakim/together-todo"
 badge: "In Progress"
 thumb: "/assets/img/togethertodo-thumb.png"
 thumb_alt: "Together To-Do bilingual Korean/English Kanban board for children"

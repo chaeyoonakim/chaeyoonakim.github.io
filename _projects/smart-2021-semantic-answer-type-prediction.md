@@ -2,7 +2,7 @@
 title: "Semantic Answer Type Prediction"
 period: "Oct 2021"
 context: "ISWC · SMART Challenge"
-github: "https://github.com/chaeyoonyunakim/smart-2021-at-answer-type-prediction"
+github: "https://github.com/chaeyoonakim/smart-2021-at-answer-type-prediction"
 badge: "1st Place"
 thumb: "/assets/img/smart-poster-thumb.png"
 thumb_alt: "CitySAT poster presented at SMART 2021 / ISWC"

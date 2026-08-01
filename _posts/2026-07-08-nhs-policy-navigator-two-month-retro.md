@@ -8,7 +8,7 @@ tags: [nhs-policy-navigator, RAP, mongodb, gemini, agentic-rag, adaptive-retriev
 summary: "A retro on the two-month journey of NHS Policy Navigator — from a one-day MongoDB hackathon build in May, through right-sizing the stack for a public-data PoC, to a Gold RAP product with a Query Router (v1.1.0) presented as a prototype in July."
 ---
 
-In May 2026 I walked into the MongoDB Agentic Evolution Hackathon in London on the strength of a one-line pitch: *"Build in a day. Shape the future of AI Agents."* Two months later, [**NHS Policy Navigator**](https://github.com/chaeyoonyunakim/nhs-policy-navigator) — an adaptive retrieval agent over the NHS 10 Year Health Plan — is a documented, tested, CI-gated product at **v1.1.0**, and I've just presented it as a prototype. This is the retro on those two months: what happened in each phase, and what each one taught me.
+In May 2026 I walked into the MongoDB Agentic Evolution Hackathon in London on the strength of a one-line pitch: *"Build in a day. Shape the future of AI Agents."* Two months later, [**NHS Policy Navigator**](https://github.com/chaeyoonakim/nhs-policy-navigator) — an adaptive retrieval agent over the NHS 10 Year Health Plan — is a documented, tested, CI-gated product at **v1.1.0**, and I've just presented it as a prototype. This is the retro on those two months: what happened in each phase, and what each one taught me.
 
 ## First, what "adaptive retrieval" means
 
@@ -61,7 +61,7 @@ It felt slow. It wasn't. Every feature afterwards landed on a base that tested i
 
 ## The architecture, briefly
 
-The shape that came out of phases 2 and 3 is three layers (the full write-up is in [`docs/architecture.md`](https://github.com/chaeyoonyunakim/nhs-policy-navigator/blob/main/docs/architecture.md)):
+The shape that came out of phases 2 and 3 is three layers (the full write-up is in [`docs/architecture.md`](https://github.com/chaeyoonakim/nhs-policy-navigator/blob/main/docs/architecture.md)):
 
 1. **Front end** — a single-file vanilla HTML/JS page styled to the NHS England identity.
 2. **API** — a FastAPI application exposing query, stats, history, digest and health endpoints.

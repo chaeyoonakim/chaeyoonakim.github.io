@@ -9,7 +9,7 @@ tags: [gemini, image-generation, makaton, AAC, SEND, prompt-engineering]
 
 ## Background
 
-While building [Getting Started with Makaton](https://github.com/chaeyoonyunakim/getting-started-with-makaton) — a digital AAC choice board for non-verbal and emerging-verbal pupils in UK SEN schools — I needed a set of symbol cards covering everyday school vocabulary: locations, actions, food, and communication controls.
+While building [Getting Started with Makaton](https://github.com/chaeyoonakim/getting-started-with-makaton) — a digital AAC choice board for non-verbal and emerging-verbal pupils in UK SEN schools — I needed a set of symbol cards covering everyday school vocabulary: locations, actions, food, and communication controls.
 
 Official Makaton symbols are licensed under a paid scheme, and ARASAAC/Mulberry symbols (the main open alternatives) are limited in coverage and stylistically inconsistent with each other. I decided to generate a bespoke set using Gemini image generation, targeting 16 core symbols.
 
@@ -95,4 +95,4 @@ Running all 16 in one session with this as the fixed context kept the visual wei
 
 ## Outputs
 
-The 16 generated cards live at [`assets/cards/`](https://github.com/chaeyoonyunakim/getting-started-with-makaton/tree/main/assets/cards) in the Getting Started with Makaton repository and are loaded by the choice board's multi-source symbol resolver as the local cache layer — the first fallback before ARASAAC, Mulberry, and Sclera.
+The 16 generated cards live at [`assets/cards/`](https://github.com/chaeyoonakim/getting-started-with-makaton/tree/main/assets/cards) in the Getting Started with Makaton repository and are loaded by the choice board's multi-source symbol resolver as the local cache layer — the first fallback before ARASAAC, Mulberry, and Sclera.
