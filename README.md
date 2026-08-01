@@ -83,7 +83,7 @@ Create a new file in `_projects/` — no changes to `index.html` needed.
 title: "Project title"
 period: "May 2026"            # display string shown on the card (use 'period', not 'date')
 context: "Hackathon · NHS"   # shown after period with · separator
-github: "https://github.com/chaeyoonyunakim/your-repo"
+github: "https://github.com/chaeyoonakim/your-repo"
 badge: "In Progress"         # optional pill label (e.g. "1st Place", "In Progress")
 featured: true               # optional — spans full grid width, shows thumbnail
 thumb: "/assets/img/your-thumbnail.jpg"  # local path or absolute https:// URL

@@ -9,7 +9,7 @@ summary: "Running spaCy NER (via Presidio) to catch names in free text — model
 ---
 
 > Notes from wiring a Named Entity Recognition layer into a PII-detection pipeline.
-> Light context in my [NoteGuard retro](https://chaeyoonyunakim.github.io/2026/07/10/noteguard-one-month-retro/);
+> Light context in my [NoteGuard retro](https://chaeyoonakim.github.io/2026/07/10/noteguard-one-month-retro/);
 > this post is the NLP, not the project.
 
 Most PII in structured-ish text has a *format*. NHS numbers, postcodes, emails, phone

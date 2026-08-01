@@ -8,7 +8,7 @@ tags: [nhs, de-identification, phi, llm, langgraph, healthcare-ai, retro]
 summary: "Building the trust layer for clinical AI — from a hackathon hack to a deployed, honestly-measured de-identification agent."
 ---
 
-> **TL;DR** — I built [NoteGuard](https://github.com/chaeyoonyunakim/noteguard-agent), a trust layer that de-identifies NHS clinical
+> **TL;DR** — I built [NoteGuard](https://github.com/chaeyoonakim/noteguard-agent), a trust layer that de-identifies NHS clinical
 > free-text so an LLM agent can safely draft discharge summaries, and *proves* the
 > privacy with a measured number. It started at a hackathon as a privacy on-ramp for
 > federated learning, got pivoted into a demoable product on the day, and then spent
@@ -192,10 +192,10 @@ truth about whether it did.
 
 ## Further reading
 
-- [**Where Regex Ends: Practical NER for PII in Free Text**](https://chaeyoonyunakim.github.io/2026/07/17/where-regex-ends-ner-for-pii/)
+- [**Where Regex Ends: Practical NER for PII in Free Text**](https://chaeyoonakim.github.io/2026/07/17/where-regex-ends-ner-for-pii/)
   — a technical zoom-in on the NER layer I mention above: Presidio + spaCy, model size as a
   recall dial, and why de-identification is a recall-first problem.
 
 *Built with a de-identification core, LangGraph + Gemini, Tavily for public-guidance
 grounding, and a lot of screenshots. Live on Hugging Face Spaces; code on
-[GitHub](https://github.com/chaeyoonyunakim/noteguard-agent).*
+[GitHub](https://github.com/chaeyoonakim/noteguard-agent).*

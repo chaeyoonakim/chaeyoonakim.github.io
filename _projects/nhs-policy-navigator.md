@@ -2,7 +2,7 @@
 title: "NHS Policy Navigator"
 period: "May 2025"
 context: "MongoDB Agentic Evolution Hackathon"
-github: "https://github.com/chaeyoonyunakim/nhs-policy-navigator"
+github: "https://github.com/chaeyoonakim/nhs-policy-navigator"
 badge: "In Progress"
 thumb: "/assets/img/policy-navigator-thumb.png"
 thumb_alt: "NHS Policy Navigator proof-of-concept UI design"

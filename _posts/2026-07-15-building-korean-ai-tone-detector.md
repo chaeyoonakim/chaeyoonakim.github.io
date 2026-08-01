@@ -9,7 +9,7 @@ summary: "내 블로그 글에서 AI 냄새가 나면 슬랙으로 알려주는 
 ---
 지난 회고를 쓰면서 한 가지 궁금증이 생겼다. 요즘 블로그 글 중에 AI 말투가 섞인 글이 많다는데 내 글은 어떨까. 궁금하면 만들어보는 게 빠르다. 그래서 하루 만에 작은 실험 도구를 하나 만들었다.
 
-> https://github.com/chaeyoonyunakim/korean-skills-webhook
+> https://github.com/chaeyoonakim/korean-skills-webhook
 
 이름 그대로 한국어 블로그 글에서 AI 냄새가 나면 슬랙으로 알려주는 파이프라인이다. 거창한 프레임워크 없이 순수 함수 여섯 개를 이어 붙였고 상태는 Pydantic 모델로 넘긴다. 형태소 분석은 kiwipiepy를 썼다. 자바 없이 파이썬만으로 돌아가서 GitHub Actions 러너에 올리기 좋았다.
 

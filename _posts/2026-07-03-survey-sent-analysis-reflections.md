@@ -11,7 +11,7 @@ tags: [python, nltk, text-preprocessing, contractions, stopwords, stemming, lemm
 지난 플젝 톺아보기 시작은 한달 전 동기에게 받은 짧은 메세지로부터였다. 그 당시 우리가 같은 팀이었을 때 내가 스탭 서베이 결과를 가지고 감정 분석을 했던 내용을 동기가 기억하고 있었다. 새로 통합한지 얼마 안된 조직에서 팀 어웨이데이를 앞두고 일종의 온도 체크 방식으로 진행한 사전 설문조사가 있었다. 동기가 내게 묻고자 하는 내용이 언제적 무엇을 가리키는지 정확히 알았다. 그런데 정작 분석 내용이 기억나지 않았다. 
 
 원본 리포지토리를 불러와 들여다봤다.
-> https://github.com/chaeyoonyunakim/survey-sent-analysis
+> https://github.com/chaeyoonakim/survey-sent-analysis
 
 어렵지 않게 다음날 통화에서 설명할 수 있었다.
 
