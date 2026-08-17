@@ -2,6 +2,9 @@ title: Chaeyoon Kim
 url: https://chaeyoonakim.github.io
 description: Data Scientist at NHS England. Writing about data science, AI, and health.
 
+# Cloudflare Web Analytics beacon token (Analytics & Logs > Web Analytics in Cloudflare dashboard)
+cloudflare_analytics_token: "6657e41c76d545d99f4ae15baf17a621"
+
 permalink: /:year/:month/:day/:title/
 
 plugins: [jekyll-feed]
