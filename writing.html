@@ -27,7 +27,7 @@ title: Writing
 
   {% assign external_posts = site.posts | where_exp: "post", "post.type != 'reflection'" %}
   {% if external_posts.size > 0 %}
-  <p class="writing-sub-label">On LinkedIn</p>
+  <p class="writing-sub-label">Talks &amp; articles</p>
   <div class="posts-grid">
     {% for post in external_posts %}
     <a class="post-card" href="{{ post.url }}">
