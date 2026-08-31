@@ -58,9 +58,9 @@ tags: [econometrics, NHS, panel-data]
 - `summary` — shown as the card excerpt on the homepage (optional; falls back to post excerpt)
 - `tags` — displayed as pills on the card and the post page (optional)
 
-### Option B — Redirect to a LinkedIn article (`type: linkedin`)
+### Option B — Redirect to an external article or talk (any `type` other than `reflection`)
 
-A lightweight stub that immediately redirects to an external URL. Appears under **On LinkedIn** on the homepage.
+A lightweight stub that immediately redirects to an external URL. Appears under **Talks & articles** on the writing page.
 
 ```yaml
 ---
@@ -72,7 +72,23 @@ redirect_to: https://www.linkedin.com/pulse/...
 ---
 ```
 
-Any post without a `type` field defaults to the LinkedIn sub-group.
+- `type` — any value other than `reflection` groups the post here; use something descriptive (`linkedin`, `external`, `talk`, …). A post without a `type` field also defaults to this group.
+- `redirect_note` — optional; the sentence shown above the button (defaults to "This article is published on LinkedIn Pulse.")
+- `redirect_label` — optional; the button text (defaults to "Read on LinkedIn ↗")
+
+For a non-LinkedIn redirect (e.g. a conference poster page), set `redirect_note`/`redirect_label` to match:
+
+```yaml
+---
+layout: post
+type: external
+title: "Vibe coding for England Pharmacy analysis with open data"
+date: 2025-12-03
+redirect_to: https://nat-stephenson.github.io/HACA_Quarto_Book/theme3.html
+redirect_note: "This poster was presented at the Health and Care Analytics (HACA) Conference 2025."
+redirect_label: "View poster ↗"
+---
+```
 
 ## Adding a project card
 

@@ -16,8 +16,8 @@ layout: default
   {% endif %}
   {% if page.redirect_to %}
   <div class="redirect-card">
-    <p class="body-text">This article is published on LinkedIn Pulse.</p>
-    <a class="btn btn-primary" href="{{ page.redirect_to }}" target="_blank">Read on LinkedIn ↗</a>
+    <p class="body-text">{{ page.redirect_note | default: "This article is published on LinkedIn Pulse." }}</p>
+    <a class="btn btn-primary" href="{{ page.redirect_to }}" target="_blank">{{ page.redirect_label | default: "Read on LinkedIn ↗" }}</a>
   </div>
   {% else %}
   {% if page.summary %}
