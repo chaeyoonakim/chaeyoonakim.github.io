@@ -3,22 +3,24 @@ Renders one project card.
 Params:
   project  — the project document (required)
   compact  — when true, suppress the thumbnail (text-only card)
-Cards with a `links` list use a stretched primary link so the whole card opens
-the repo while the pill links stay independently clickable; others wrap the
-whole card in a single anchor.
+The card opens `url` (a live app) when set, otherwise `github`. Cards with a
+`links` list or an app `url` use a stretched primary link so the whole card
+opens it while the pill links (including the repo, for app cards) stay
+independently clickable; others wrap the whole card in a single anchor.
 {%- endcomment -%}
 {%- assign p = include.project -%}
 {%- assign show_thumb = p.thumb -%}
 {%- if include.compact -%}{%- assign show_thumb = false -%}{%- endif -%}
-{%- if p.links -%}
+{%- assign primary = p.url | default: p.github -%}
+{%- if p.links or p.url -%}
 <div class="project-card{% if show_thumb %} project-card--vertical{% endif %} project-card--linked">
   {% if show_thumb %}<div class="project-thumb"><img src="{{ p.thumb }}" alt="{{ p.thumb_alt }}" loading="lazy"></div>{% endif %}
   <div class="project-card-body">
     {% if p.badge %}<span class="project-badge{% if p.badge == 'In Progress' %} project-badge--progress{% endif %}">{{ p.badge }}</span>{% endif %}
     <span class="post-meta">{{ p.period }}{% if p.context %} &middot; {{ p.context }}{% endif %}</span>
-    <a class="post-card-title project-card-stretch" href="{{ p.github }}" target="_blank">{{ p.title }}</a>
+    <a class="post-card-title project-card-stretch" href="{{ primary }}" target="_blank">{{ p.title }}</a>
     <span class="post-excerpt">{{ p.excerpt }}</span>
-    <div class="project-links">{% for link in p.links %}<a class="project-link" href="{{ link.url }}" target="_blank">{{ link.label }} ↗</a>{% endfor %}</div>
+    <div class="project-links">{% if p.url %}<a class="project-link" href="{{ p.github }}" target="_blank">Source code ↗</a>{% endif %}{% for link in p.links %}<a class="project-link" href="{{ link.url }}" target="_blank">{{ link.label }} ↗</a>{% endfor %}</div>
   </div>
 </div>
 {%- else -%}

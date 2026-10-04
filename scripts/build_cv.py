@@ -151,11 +151,14 @@ story.append(Paragraph(b("10-Year Workforce Plan modelling:",
     "(published in Jun 2022), incorporating National Audit Office feedback."), bullet, bulletText="-"))
 story.append(Paragraph("AI &amp; Machine Learning engineering:", sub))
 for lbl, txt in [
-    ("Endo Loop:", "Co-built a non-diagnostic, at-home pattern journal for endometriosis and chronic pelvic pain, "
+    (link("Endo Loop:", "https://engine-ai-hackathon-frontend.vercel.app/"), "Co-built a non-diagnostic, at-home pattern journal for endometriosis and chronic pelvic pain, "
      "combining voice or manual symptom logs with wearable signals in a deterministic, safety-guarded pattern "
      "engine; awarded joint 5th place at the eMed and OpenAI Reimagine Health "
      "hackathon (Jul 2026)."),
-    ("NHS Policy Navigator:", "Built an adaptive Retrieval-Augmented Generation pipeline over the published 10-Year "
+    (link("NoteGuard:", "https://huggingface.co/spaces/chaeyoona/noteguard-agent"), "Built a trust layer for clinical AI: a LangGraph agent that de-identifies NHS "
+     "clinical free-text before any model sees it, so an LLM can safely draft discharge summaries with a measured "
+     "residual-PII trust score; built at the {Tech: Europe} London AI Hackathon (Jun 2026)."),
+    (link("NHS Policy Navigator:", "https://nhs-policy-navigator.vercel.app/"), "Built an adaptive Retrieval-Augmented Generation pipeline over the published 10-Year "
      "Health Plan and public NHS news feeds at the MongoDB Agentic Evolution Hackathon (May 2026), then refined it "
      "with a working group through a spec-driven development cycle at near-zero infrastructure cost."),
     ("Pharmacy First agent:", "Presented an LLM-powered analysis about NHS Pharmacy operation with open source "
