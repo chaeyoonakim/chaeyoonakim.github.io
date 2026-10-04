@@ -204,7 +204,9 @@ entry("BSc Electronic Engineering – Kyungpook National University (Daegu, Sout
     b("Modules include", "Electronic Engineering Lab (MATLAB), Calculus, Numerical Analysis."),
 ])
 sec("CERTIFICATIONS")
-entry("Certified AI Ethicist (CAIE) – oxethica", "Apr 2026", [])
+entry("Certified AI Ethicist (CAIE) – oxethica", "Apr 2026", [
+    f"Certified by oxethica ({link('credential', 'https://www.virtualbadge.io/certificate-validator?credential=1e3d9a6e-545f-43de-b0e3-8bd943998155')}).",
+])
 entry("Oxford AI Ethics, Regulation and Compliance Programme – Saïd Business School, University of Oxford",
       "Mar 2026", [
     f"Completed the programme ({link('credential', 'https://certify.sbs.ox.ac.uk/22a357d7-9ddb-483c-bdf4-9cf8ed2d355f')}); published the reflective article "
