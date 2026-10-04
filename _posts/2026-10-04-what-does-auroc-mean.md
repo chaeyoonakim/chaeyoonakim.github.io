@@ -3,42 +3,80 @@ layout: post
 type: reflection
 title: "What does an AUROC of 0.75 actually mean? A field guide to evaluating predictive models"
 date: 2026-10-04
-summary: "A plain-English guide to the metrics behind a risk model — confusion matrix, precision and recall, AUROC, PR-AUC, precision@k and calibration — with a ten-patient worked example and real numbers from a missed-appointments model."
+summary: "AUROC, PR-AUC, precision@k, calibration and net benefit, explained from first principles and tested with reproducible experiments: why the same AUROC can hide very different models, why PR-AUC falls with prevalence, and what a healthcare risk model should actually report."
 categories: [machine-learning, evaluation, explainer]
-tags: [auroc, roc-curve, precision-recall, calibration, brier-score, class-imbalance, healthcare]
+tags: [auroc, roc-curve, precision-recall, calibration, decision-curve, brier-score, class-imbalance, healthcare, python]
 ---
 
-> **TL;DR** — **AUROC is the probability that the model gives a randomly chosen
-> positive case a higher score than a randomly chosen negative case.** An AUROC of 0.75
-> means the model ranks that pair correctly three times out of four. AUROC says nothing
-> about how many patients you should act on, whether the scores are real probabilities,
-> or how well the model works at the top of the list where you actually spend effort.
-> For those, you need precision@k, PR-AUC and calibration.
+> **TL;DR**
+>
+> - **AUROC is a ranking probability.** It's the chance that the model scores a
+>   randomly chosen positive case above a randomly chosen negative case. An AUROC of
+>   0.75 gets that pair right three times out of four. Mathematically, it's the
+>   Mann–Whitney U statistic rescaled to 0–1.
+> - **AUROC doesn't change with prevalence or with any rescaling of the scores.**
+>   That makes it good for comparing ranking ability, and blind to three things you
+>   usually care about:
+>   - how well the model does at the **top of the list**, where a team with finite
+>     capacity actually works;
+>   - whether the **scores are real probabilities**;
+>   - whether acting on the model **does more good than harm**.
+> - In the experiments below, two models with **identical AUROC (0.75)** differ by a
+>   factor of 1.8 in precision on their top 1%. Distorting a model's probabilities
+>   leaves AUROC at 0.780 while the calibration slope falls from 0.98 to 0.49.
+> - **What to report:** AUROC with a confidence interval, PR-AUC next to its
+>   prevalence baseline, precision@k at real capacity, a calibration plot, and a
+>   decision curve. Break all of them down by subgroup.
 
 While writing up
 [two case studies on predicting missed outpatient appointments](/2026/10/04/predicting-missed-appointments-case-studies/),
 I kept using shorthand like "AUROC 0.77", "PR-AUC against a 0.10 baseline" and
-"precision@20". This post unpacks those terms properly. The examples use missed
-hospital appointments ("Did Not Attend", or DNA), but the ideas apply to any risk model.
+"precision@20". This post unpacks that vocabulary properly, from definitions to the
+statistics underneath, and tests each claim with an experiment you can rerun. The
+examples are about missed hospital appointments ("Did Not Attend", or DNA), but the
+ideas apply to any binary risk model: fraud, churn, readmission, credit default.
 
-## 1. Start with what the model actually outputs
+Every number and figure below is produced by
+[`scripts/posts/auroc_experiments.py`](https://github.com/chaeyoonakim/chaeyoonakim.github.io/blob/main/scripts/posts/auroc_experiments.py)
+with a fixed random seed.
 
-Most risk models output a **score** for each case, usually between 0 and 1. For example:
-"Patient A: 0.82, Patient B: 0.07". The score is not yet a decision. Something else
-turns it into one:
+## Contents
 
-- a **threshold** ("flag everyone above 0.5"), or
+1. Scores are not decisions
+2. A ten-patient worked example
+3. The confusion matrix and why accuracy misleads
+4. AUROC in depth: definition, statistics, properties and uncertainty
+5. Precision–recall and the prevalence baseline
+6. Precision@k: the metric for teams with finite capacity
+7. Calibration: can you read the score as a probability?
+8. Net benefit: is the model worth using at all?
+9. What to report, and common traps
+
+---
+
+## 1. Scores are not decisions
+
+A risk model outputs a **score** for each case, usually between 0 and 1. For example,
+"Patient A: 0.82, Patient B: 0.07". A score becomes a decision only when you add:
+
+- a **threshold** ("flag everyone at or above 0.5"), or
 - a **capacity** ("call the 20 highest-scoring patients this week").
 
-Some metrics judge the **scores themselves** (AUROC, PR-AUC, calibration). Others judge
-the **decision** you make with them (accuracy, precision, recall, precision@k). Mixing
-these up is the source of most confusion.
+That splits evaluation metrics into two families:
+
+| Family | Judges | Examples |
+|---|---|---|
+| **Threshold-free** | the scores themselves | AUROC, PR-AUC, calibration, Brier score |
+| **Threshold- or capacity-dependent** | the decision made with the scores | accuracy, precision, recall, F1, precision@k, net benefit |
+
+Most confusion about metrics comes from quoting one family to answer a question that
+belongs to the other.
 
 ## 2. A ten-patient worked example
 
-Ten appointments, sorted by the model's score. Three of them were actually missed:
+Ten appointments, sorted by score. Three were actually missed:
 
-| Rank | Score | Actually missed? |
+| Rank | Score | Missed? |
 |---:|---:|:---:|
 | 1 | 0.90 | ✅ |
 | 2 | 0.80 | — |
@@ -51,221 +89,386 @@ Ten appointments, sorted by the model's score. Three of them were actually misse
 | 9 | 0.10 | — |
 | 10 | 0.05 | — |
 
-We'll keep coming back to this table.
+![Left: the step-shaped ROC curve for the ten-patient example, area 0.81, above the chance diagonal. Right: the precision–recall curve stepping down from 1.0 to 0.5, average precision 0.72, above a chance line at 0.30.](/assets/img/auroc/worked-example-roc-pr.png)
 
-## 3. The confusion matrix and its children
+*Figure 1. ROC and precision–recall curves for the worked example. Each upward or
+leftward step is one patient crossing the threshold as it falls.*
 
-Pick a threshold, say **0.5**. Everyone at or above it is predicted "will miss" (ranks
-1–4):
+## 3. The confusion matrix and why accuracy misleads
+
+Set a threshold of **0.5**. Ranks 1–4 are predicted "will miss":
 
 | | Predicted miss | Predicted attend |
 |---|---:|---:|
-| **Actually missed** | 2 (true positives, TP) | 1 (false negative, FN) |
-| **Actually attended** | 2 (false positives, FP) | 5 (true negatives, TN) |
+| **Actually missed** | TP = 2 | FN = 1 |
+| **Actually attended** | FP = 2 | TN = 5 |
 
-Every threshold metric is a ratio from this table:
-
-| Metric | Formula | Plain English | Worked example |
+| Metric | Formula | Question it answers | Here |
 |---|---|---|---:|
-| **Accuracy** | (TP + TN) / all | How often is the model right? | 7 / 10 = 0.70 |
-| **Precision** (positive predictive value) | TP / (TP + FP) | Of those we flagged, how many really missed? | 2 / 4 = 0.50 |
-| **Recall** (sensitivity) | TP / (TP + FN) | Of those who missed, how many did we flag? | 2 / 3 = 0.67 |
-| **Specificity** | TN / (TN + FP) | Of those who attended, how many did we leave alone? | 5 / 7 = 0.71 |
-| **F1** | harmonic mean of precision and recall | One number balancing the two | 0.57 |
+| Accuracy | (TP + TN) / N | How often is the model right? | 0.70 |
+| Precision (PPV) | TP / (TP + FP) | Of those flagged, how many missed? | 0.50 |
+| Recall (sensitivity, TPR) | TP / (TP + FN) | Of those who missed, how many were flagged? | 0.67 |
+| Specificity (TNR) | TN / (TN + FP) | Of those who attended, how many were left alone? | 0.71 |
+| False positive rate (FPR) | FP / (FP + TN) | Of those who attended, how many were flagged? | 0.29 |
+| F1 | 2 · P · R / (P + R) | A balance of precision and recall | 0.57 |
 
-Change the threshold and every number changes. That's why a single precision or recall
-figure, without the threshold or capacity behind it, isn't very informative.
+Recall and specificity are conditioned on the **true** class, so they don't depend on
+prevalence. Precision is conditioned on the **predicted** class, so it does. That one
+fact explains most of what follows.
 
-### Why accuracy misleads when the outcome is rare
+**Why accuracy misleads on rare outcomes.** In my hackathon DNA model, 8.8% of
+appointments were missed. A Random Forest reached **91% accuracy**, which is exactly
+what "everyone attends" scores. Its recall for missed appointments was **0.6%** (37 of
+6,612). A logistic regression with balanced class weights managed only 56% accuracy, but
+recall of **60%**, at a precision of 12%. These two models aren't "more" and "less"
+accurate. They're different trade-offs, and accuracy hides both.
 
-In my hackathon model, only **8.8%** of appointments were missed. A Random Forest
-reached **91% accuracy**, the same as predicting "everyone attends". Its confusion
-matrix showed the problem:
+## 4. AUROC in depth
 
-- **Recall:** 37 of 6,612 missed appointments, i.e. **0.6%**.
-- **Precision:** 37 of 166 flagged, i.e. 22%.
+### 4.1 The ROC curve
 
-A logistic regression with balanced class weights had only 56% accuracy, but recall of
-**60%**. The cost was precision of 12%: it flagged about 30,000 patients who attended.
+Sweep the threshold from +∞ down to −∞. At each step, plot the **TPR** (y) against the
+**FPR** (x).
 
-Neither model is "the accurate one". They make different trade-offs, and accuracy hides
-both. **When one class is rare, leave accuracy out of the headline.**
+- A perfect model rises straight to (0, 1): it catches every positive before raising a
+  single false alarm.
+- A random model follows the diagonal.
+- The name "receiver operating characteristic" comes from Second World War radar
+  engineering, where operators traded detecting aircraft against false alarms.
 
-## 4. ROC curve and AUROC: what they actually mean
+### 4.2 What the area actually means
 
-### The ROC curve
+The area under that curve has an exact probabilistic meaning (Hanley & McNeil, 1982):
 
-Instead of picking one threshold, sweep through **every** possible threshold. At each
-one, plot:
+> **AUROC = P(score of a random positive > score of a random negative)**,
+> counting ties as ½.
 
-- **y-axis:** the true positive rate (recall), i.e. the share of missed appointments
-  flagged;
-- **x-axis:** the false positive rate (1 − specificity), i.e. the share of attended
-  appointments wrongly flagged.
+Check it by hand on the worked example. There are 3 positives × 7 negatives = **21
+pairs**:
 
-A perfect model goes straight up to the top-left corner: it catches everyone before it
-makes a single false alarm. A useless model follows the diagonal: every extra true
-positive costs a proportional false alarm. The name "receiver operating characteristic"
-comes from radar engineering, which is why it sounds odd.
+- The positive at 0.90 outranks all 7 negatives.
+- The positive at 0.60 outranks 6 (it loses only to 0.80).
+- The positive at 0.30 outranks 4.
 
-### AUROC is the area under that curve
+**(7 + 6 + 4) / 21 = 17 / 21 = 0.81.**
 
-The cleaner definition is this:
+That pair count is exactly the **Mann–Whitney U statistic**. So AUROC = U / (n₊ · n₋),
+which is why AUROC is also called the **concordance statistic (c-statistic)**. Three
+implementations agree:
 
-> **AUROC = the probability that a randomly chosen positive case scores higher than a
-> randomly chosen negative case.**
+```python
+import numpy as np
+from scipy.stats import mannwhitneyu
+from sklearn.metrics import roc_auc_score
 
-Check it on the worked example. There are 3 missed × 7 attended = **21 pairs**. Count
-the pairs where the missed patient scored higher:
+y = np.array([1, 0, 1, 0, 0, 1, 0, 0, 0, 0])
+s = np.array([.90, .80, .60, .50, .40, .30, .20, .15, .10, .05])
 
-- The missed patient at 0.90 beats all 7 attenders → 7
-- The missed patient at 0.60 beats 6 of them (not 0.80) → 6
-- The missed patient at 0.30 beats 4 of them (0.20, 0.15, 0.10, 0.05) → 4
+pos, neg = s[y == 1], s[y == 0]
+pairwise = ((pos[:, None] > neg).sum() + 0.5 * (pos[:, None] == neg).sum()) / (len(pos) * len(neg))
+u = mannwhitneyu(pos, neg).statistic / (len(pos) * len(neg))
 
-**17 / 21 = 0.81.** That is exactly the area under the ROC curve for this data.
+print(pairwise, u, roc_auc_score(y, s))   # 0.8095 0.8095 0.8095
+```
 
-### Reading AUROC values
+Two useful consequences:
 
-| AUROC | Interpretation |
+- **Gini = 2 · AUROC − 1.** Credit-risk teams often quote the Gini coefficient
+  instead. AUROC 0.75 is Gini 0.50.
+- **AUROC 0.5 is the floor for "no information"**, not 0. A model with AUROC 0.3 is
+  informative but inverted: flip its sign.
+
+### 4.3 Properties that follow from the definition
+
+Because AUROC only compares **orderings** within positive–negative pairs:
+
+1. **It doesn't change under any strictly increasing transformation of the scores.**
+   Squaring the scores, halving them, or passing them through a sigmoid all leave
+   AUROC unchanged. So **AUROC can't detect miscalibration** (section 7).
+2. **It doesn't depend on prevalence.** TPR is computed within positives and FPR
+   within negatives, so the class ratio never enters. Figure 2 tests this.
+
+**Experiment 1: change prevalence, keep the model.** I simulated the same "binormal"
+model (negative scores ~ N(0, 1), positive scores ~ N(0.954, 1), which gives a
+theoretical AUROC of 0.75) at three prevalences, with 200,000 cases each:
+
+| Prevalence | AUROC | Average precision | AP ÷ prevalence | Precision in top 10% | Lift in top 10% |
+|---:|---:|---:|---:|---:|---:|
+| 50% | 0.751 | 0.742 | 1.5× | 0.855 | 1.7× |
+| 10% | 0.749 | 0.274 | 2.7× | 0.313 | 3.1× |
+| 1% | 0.741 | 0.038 | 4.0× | 0.034 | 3.6× |
+
+![Left: three ROC curves for 50%, 10% and 1% prevalence lying on top of each other. Right: three precision–recall curves that sink dramatically as prevalence falls, with average precision 0.74, 0.27 and 0.04.](/assets/img/auroc/prevalence-roc-vs-pr.png)
+
+*Figure 2. The same model at three prevalences. The ROC curve (left) doesn't move. The
+precision–recall curve (right) collapses as positives become rare.*
+
+Read across the table. AUROC is effectively constant (the small dip at 1% is sampling
+noise: there are only about 2,000 positives). Precision in the top 10% falls from 86%
+to 3%, the difference between "most calls are useful" and "almost none are". **A model
+with "good" AUROC can still be operationally poor when the outcome is rare.**
+
+### 4.4 Same AUROC, different models
+
+AUROC averages over **every** threshold equally, including thresholds you would never
+use (flagging 90% of patients). Two ROC curves can cross and still enclose the same
+area.
+
+**Experiment 2: equal AUROC, unequal top.** Model A is the binormal model above. Model B
+gives positives a wider spread (σ = 1.5, mean shifted to keep the AUROC at 0.75). It's
+very confident about some positives and lost on the rest. Prevalence is 10%:
+
+| | AUROC | Precision@1% | Precision@5% | Precision@30% |
+|---|---:|---:|---:|---:|
+| Model A | 0.753 | 0.53 | 0.39 | 0.21 |
+| Model B | 0.749 | **0.94** | **0.61** | 0.22 |
+
+![Two ROC curves with equal area that cross at about 0.3 false positive rate: Model B rises much faster at the far left, the shaded region a team with finite capacity uses, while Model A is higher on the right.](/assets/img/auroc/same-auroc-different-top.png)
+
+*Figure 3. Two models with the same AUROC. Model B is far better in the shaded region
+(FPR below 5%), which is where a team with limited capacity operates. Model A wins only
+at thresholds nobody uses.*
+
+A booking team that can call 1% of patients finds missed appointments at **94%
+precision with Model B and 53% with Model A**, from models that a leaderboard sorted by
+AUROC would call tied. When only the top of the ranking matters, also report
+**precision@k** (section 6) or **partial AUROC** restricted to a clinically relevant FPR
+range.
+
+### 4.5 AUROC is an estimate, so report its uncertainty
+
+**Experiment 3: how wide is the confidence interval?** Same binormal model, 10%
+prevalence, 1,000 bootstrap resamples:
+
+| Rows | Positives | AUROC | 95% bootstrap CI | Width |
+|---:|---:|---:|---|---:|
+| 600 | 66 | 0.745 | 0.680–0.807 | 0.127 |
+| 6,000 | 609 | 0.752 | 0.729–0.772 | 0.043 |
+| 60,000 | 5,976 | 0.751 | 0.744–0.757 | 0.013 |
+
+The width depends mostly on the number of **positives**, not rows. With 66 positive
+cases, "AUROC 0.75" is compatible with anything from a weak model (0.68) to a strong
+one (0.81). Practical rules:
+
+- **Always quote a confidence interval.** Use a bootstrap, or DeLong's method (DeLong et
+  al., 1988), which also gives a paired test for comparing two models on the **same**
+  test set.
+- **Bootstrap whole patients, not rows,** when patients repeat. Repeat appointments are
+  correlated, so a row bootstrap makes the interval too narrow.
+- **A difference of 0.01–0.02 in AUROC between models is rarely meaningful** on
+  healthcare-sized data. Check the paired test before declaring a winner.
+
+### 4.6 Reading AUROC values
+
+| AUROC | Practical reading |
 |---|---|
-| 0.5 | No better than a coin toss at ordering pairs |
-| 0.6–0.7 | Weak, but can still help prioritise |
-| 0.7–0.8 | Typical of good real-world healthcare risk models |
-| 0.8–0.9 | Strong; on noisy behavioural outcomes, also a prompt to check for leakage |
-| > 0.9 | Rare for messy human outcomes; investigate before celebrating |
+| 0.50 | No ranking information |
+| 0.60–0.70 | Weak, but can still focus effort usefully (see precision@k) |
+| 0.70–0.80 | Typical of good real-world models of human behaviour; published NHS outpatient DNA models sit at about 0.71–0.77 |
+| 0.80–0.90 | Strong. On behavioural outcomes, **audit for leakage first** |
+| > 0.90 | Rare for messy human outcomes. Assume a bug until proven otherwise |
 
-For context, published NHS general-outpatient DNA models sit at about 0.71–0.77.
+The thresholds depend on context. A 0.70 on a hard problem can be more useful than a
+0.90 that leaks the label.
 
-### What AUROC doesn't tell you
+## 5. Precision–recall and the prevalence baseline
 
-1. **It ignores the threshold and your capacity.** Two models with the same AUROC can
-   differ a lot in the top 20 cases, which is the only part a team with 20 calls a week
-   ever sees.
-2. **It is insensitive to how rare the outcome is.** Because the false positive rate
-   divides by *all* negatives, a model can raise thousands of false alarms while the
-   false positive rate barely moves when negatives are plentiful.
-3. **It ignores calibration.** Multiply every score by 0.5 and the AUROC is unchanged,
-   because the ordering is unchanged. The scores now say "half as likely" for everyone.
-4. **It averages over thresholds you would never use.** The far-right part of the
-   curve, where you flag almost everyone, counts just as much as the useful top-left
-   part.
+The precision–recall (PR) curve plots precision against recall as the threshold moves.
+Unlike ROC, both of its axes are about the **positive** class, so it responds directly
+to how rare that class is (Saito & Rehmsmeier, 2015).
 
-## 5. Precision–recall curve and PR-AUC
+The usual summary is **average precision (AP)**. Walk down the ranked list, and every
+time you reach a true positive, record the precision at that point. Then average those
+values over all positives:
 
-The PR curve plots **precision against recall** as the threshold moves. Unlike ROC, it
-focuses on the positive class, so it reacts sharply when the outcome is rare.
+- Rank 1 is a hit → 1/1 = 1.00.
+- Rank 3 is a hit → 2/3 = 0.67.
+- Rank 6 is a hit → 3/6 = 0.50.
+- **AP = 0.72.**
 
-The summary number is usually **average precision (AP)**, often called PR-AUC. It
-averages precision at each point where a true positive is found, going down the ranked
-list.
+Three things to know:
 
-On the worked example:
+- **The no-skill baseline is the prevalence, not 0.5.** A random ranking has expected
+  AP equal to the positive rate. Always quote AP **next to** its baseline, or as a
+  ratio (the "AP ÷ prevalence" column in Experiment 1).
+- **Use the step-wise AP, not a trapezoid under the PR curve.** Linear interpolation
+  between PR points is over-optimistic (Davis & Goadrich, 2006).
+  `sklearn.metrics.average_precision_score` uses the correct step-wise sum.
+- **Name the class.** AP for the majority class is near 1 by construction. In my
+  hackathon notebook, "AP 0.94" turned out to be for the *attended* class, whose
+  baseline was 0.91.
 
-- Rank 1 is a hit: precision 1/1 = 1.00.
-- Rank 3 is a hit: precision 2/3 = 0.67.
-- Rank 6 is a hit: precision 3/6 = 0.50.
+## 6. Precision@k: the metric for teams with finite capacity
 
-**AP = (1.00 + 0.67 + 0.50) / 3 = 0.72.**
+If a team can act on **k** cases per period, only the top k of the ranking matter:
 
-**The crucial detail is that PR-AUC's no-skill baseline equals the prevalence.** A
-random model has AP ≈ the share of positives. Here that's 0.30; for DNAs it's about
-0.09. So:
+```python
+def precision_at_k(y_true, scores, k):
+    """Share of true positives among the k highest-scoring cases."""
+    top_k = np.argsort(-scores)[:k]
+    return y_true[top_k].mean()
 
-- AP = 0.30 on a 10% outcome is a meaningful lift (3× baseline).
-- AP = 0.94 on a 91% outcome is barely better than guessing.
+def recall_at_k(y_true, scores, k):
+    """Share of all positives that land in the top k."""
+    top_k = np.argsort(-scores)[:k]
+    return y_true[top_k].sum() / y_true.sum()
+```
 
-That second case was a trap in my hackathon notebook: the 0.94 was computed for the
-*attended* class. **Always ask which class a metric is about, and what its baseline
-is.**
+**Lift@k** is precision@k divided by prevalence: how many times better than calling at
+random. In the hackathon model, the top 10% by risk had a **16.3%** missed rate against
+an **8.8%** baseline (lift ≈ 1.9×), and held **19.5%** of all missed appointments.
+"Each call is about twice as likely to reach someone who would have missed" is a
+sentence a service manager can act on. "AUROC 0.62" isn't.
 
-## 6. Precision@k and recall@k: metrics for teams with finite capacity
+Two cautions:
 
-If a booking team can make **k** calls a week, the only part of the ranking that matters
-is the top k:
-
-- **Precision@k:** of the k patients we call, how many would have missed?
-- **Recall@k:** of all the patients who would have missed, how many are in our top k?
-
-In the worked example, at k = 3: precision@3 = 2/3 and recall@3 = 2/3.
-
-In the hackathon model, the top 10% by risk had a **16.3%** missed rate against an
-**8.8%** baseline, and contained **19.5%** of all missed appointments. That is roughly
-twice as efficient as calling at random. A manager can act on that sentence, which isn't
-true of "AUROC 0.62".
-
-A related way to say the same thing is **lift**: precision@k divided by prevalence.
+- **Fix k before you look at the test set.** Choosing k after seeing the results is a
+  quiet form of overfitting.
+- **Simulate the real cadence.** If scoring runs weekly, compute precision@k **for each
+  week** and report the distribution, not one pooled figure.
 
 ## 7. Calibration: can you read the score as a probability?
 
-A model is **well calibrated** if, among patients it scores at 0.2, about 20% actually
-miss. Check it by grouping predictions into bins and comparing the predicted with the
-observed rate:
+A model is **calibrated** if, among cases scored at 0.2, about 20% are positive. AUROC
+can't see this (property 1 in section 4.3), so it needs its own checks.
 
-| Risk bucket | Mean predicted | Actual missed |
-|---|---:|---:|
-| Very low | 3.0% | 5.3% |
-| Moderate | 12.7% | 11.0% |
-| Very high | **34.6%** | **20.3%** |
+**Experiment 4: distort the probabilities, watch AUROC stay still.**
 
-These are real numbers from my hackathon model. It **ranked** patients correctly, which
-is why AUROC was fine, but was **over-confident** at the top. Showing staff "35% chance"
-for a group that actually misses 20% of the time would mislead them.
+1. I fitted a logistic regression on simulated data with 10% prevalence.
+2. I distorted its output by doubling the logit and shifting it. This is a monotone
+   change, so the ranking is untouched, but the model becomes over-confident.
+3. I repaired the distorted output with isotonic regression, fitted on a separate
+   calibration split.
 
-Useful summaries:
+| Model | AUROC | Brier | Calibration slope | Calibration intercept |
+|---|---:|---:|---:|---:|
+| Well specified | 0.780 | 0.0817 | 0.98 | −0.09 |
+| Distorted (monotone) | **0.780** | 0.0885 | **0.49** | −0.83 |
+| Isotonic-recalibrated | 0.779 | 0.0819 | 0.95 | −0.10 |
+| *Always predict prevalence* | *0.500* | *0.0930* | — | — |
 
-- **Calibration slope.** Ideally 1. Below 1 means predictions are too extreme; above 1
-  means too timid.
-- **Calibration-in-the-large** (intercept). Is the average prediction right overall?
-- **Brier score.** The mean of (score − outcome)², from 0 (perfect) upwards. It mixes
-  calibration and discrimination. On the worked example it's 0.18. Compare it with the
-  Brier score of always predicting the prevalence.
+![Reliability diagram: the distorted model's ten points bend away from the diagonal, underestimating low risks and badly overestimating the highest decile (predicted 0.58 vs observed 0.36); after isotonic recalibration the points sit on the diagonal.](/assets/img/auroc/reliability-diagram.png)
 
-**Fixes:** Platt scaling or isotonic regression, fitted on held-out data. Also beware
-resampling tricks such as SMOTE and undersampling: they deliberately distort the class
-balance, so they distort probabilities too.
+*Figure 4. Reliability diagram: ten equal-sized groups by predicted risk. The distorted
+model's top group predicts 58% but only 36% occur. Recalibration puts the points back
+on the diagonal without changing the ranking.*
 
-## 8. Which metric should I report?
+How to read the summaries:
 
-| Question you're answering | Metric |
+- **Calibration slope** is the coefficient from regressing the outcome on the model's
+  logit.
+  - **1** is ideal.
+  - **Below 1** means predictions are too extreme. This is the usual sign of
+    overfitting.
+  - **Above 1** means predictions are too timid.
+- **Calibration intercept** (calibration-in-the-large) checks whether predictions are
+  too high or too low on average.
+- **Brier score** is the mean of (p − y)². It combines calibration and discrimination,
+  so compare it with the "always predict prevalence" reference (0.0930 here) rather
+  than reading it on its own.
+- **Reliability diagram:** plot it. A single number hides *where* the miscalibration is.
+
+Real data shows the same problem. My hackathon model's "very high" risk group predicted
+**34.6%** and observed **20.3%**. Van Calster et al. (2019) call calibration "the
+Achilles heel of predictive analytics" for exactly this reason: models get validated on
+AUROC and deployed showing percentages.
+
+**Recalibration options:**
+
+- **Platt scaling** fits a logistic regression on the logit. It's best for small data.
+- **Isotonic regression** is flexible and monotone. It needs more data.
+
+Both must be fitted on data **not** used to train the model. Also note that resampling
+tricks (SMOTE, undersampling) and class weights deliberately shift predicted
+probabilities. If you use them, recalibrate afterwards.
+
+## 8. Net benefit: is the model worth using at all?
+
+None of the metrics so far answers the question a service owner actually asks: **is
+acting on this model better than the simple alternatives?** Decision curve analysis
+(Vickers & Elkin, 2006) does.
+
+For a threshold probability *pₜ*:
+
+> **Net benefit = TP / N − (FP / N) × pₜ / (1 − pₜ)**
+
+The factor *pₜ* / (1 − *pₜ*) is an **exchange rate**. Choosing *pₜ* = 0.10 says "I'd
+accept 9 unnecessary calls to prevent one missed appointment". The model is compared
+with two defaults: **call everyone** and **call no one** (net benefit 0).
+
+![Decision curve: the model's net benefit stays above both 'call everyone', which drops below zero at a 0.10 threshold, and 'call no one' across thresholds from 0.02 to 0.40.](/assets/img/auroc/decision-curve.png)
+
+*Figure 5. Decision curve for the 10%-prevalence binormal model, recalibrated to
+probabilities.*
+
+| Threshold *pₜ* | Model | Call everyone | Reading |
+|---:|---:|---:|---|
+| 0.05 | 0.061 | 0.054 | The model adds a little over calling everyone |
+| 0.10 | 0.037 | 0.001 | Calling everyone is worth nothing at this exchange rate; the model still helps |
+| 0.20 | 0.014 | −0.124 | Calling everyone does net harm; the model remains positive |
+
+Net benefit is measured in "true positives per patient, after charging for false
+positives". A net benefit of 0.037 means the equivalent of 3.7 missed appointments
+correctly targeted per 100 patients, at no false-positive cost. If a model's curve dips
+below "call everyone" or "call no one" across the plausible range of *pₜ*, it
+shouldn't be deployed, however good its AUROC.
+
+## 9. What to report, and common traps
+
+### Matching questions to metrics
+
+| Question | Metric |
 |---|---|
-| Does the model rank cases better than chance overall? | **AUROC**, with a confidence interval |
-| How much better than chance is it on a rare outcome? | **PR-AUC**, stated next to its prevalence baseline |
-| If we act on the top k each week, how well does that go? | **Precision@k, recall@k, lift** |
-| Can staff read the score as a probability? | **Calibration plot, slope and intercept, Brier score** |
-| At this threshold, what are the error trade-offs? | **Confusion matrix, precision, recall, specificity** |
-| Does it work equally well across patient groups? | All of the above, **by subgroup** |
-| Is the model worth using at all? | **Decision curve / net benefit**, against simple rules |
+| Does the model rank cases better than chance? | **AUROC with a 95% CI** (bootstrap or DeLong) |
+| How much better than chance on a rare outcome? | **AP with its prevalence baseline** |
+| How well does acting on the top k work? | **Precision@k, recall@k, lift@k**, per scoring cycle |
+| Can the score be read as a probability? | **Calibration slope and intercept, reliability diagram, Brier score** |
+| What are the error trade-offs at this threshold? | **Confusion matrix, precision, recall, specificity** |
+| Is acting on it better than simple defaults? | **Decision curve / net benefit** |
+| Does it work for everyone? | All of the above, **by subgroup** |
 
-My default report for a healthcare risk model:
+For clinical prediction models, the TRIPOD+AI reporting guideline (Collins et al., 2024)
+turns this into a checklist, including fairness items.
 
-- AUROC with a confidence interval;
-- PR-AUC with its baseline;
-- precision@k at the real capacity;
-- a calibration plot;
-- all of the above broken down by key subgroups;
-- a comparison with a simple rule, such as "previous DNA ≥ 1".
+### Traps I've seen, or fallen into
 
-## 9. Five habits worth keeping
+1. **Not naming the positive class.** "Precision 0.94" is meaningless until you know
+   whether it's for "missed" or "attended".
+2. **Quoting a metric without its baseline.** That means 0.5 for AUROC, the prevalence
+   for AP, and the majority-class rate for accuracy.
+3. **Choosing the threshold on the test set.** Tune on validation data, then report
+   on untouched test data.
+4. **Random splits on data that has time order or repeat patients.** These inflate
+   every metric above. Split by time, and group by patient.
+5. **Comparing models that differ by 0.01 in AUROC** without a paired test.
+6. **Showing uncalibrated scores as percentages** to people who will act on them.
+7. **Celebrating a suspiciously high AUROC.** On noisy human outcomes, 0.90 more often
+   means leakage, such as a feature recorded after the outcome, than a breakthrough.
 
-1. **Name the positive class.** "Precision 0.94" means nothing until you know whether
-   it's for "missed" or "attended".
-2. **Quote the baseline.** Prevalence for PR-AUC, 0.5 for AUROC, "everyone attends" for
-   accuracy.
-3. **Evaluate at the operating point.** That means your real threshold or capacity, not
-   a default of 0.5.
-4. **Check calibration before anyone sees a percentage.** Ranking well and being
-   calibrated are different properties.
-5. **Treat suspiciously good numbers as a bug report.** On noisy human outcomes, an
-   AUROC above about 0.85 more often means leakage than genius.
+## Reproduce it
 
-## Further reading
+```bash
+git clone https://github.com/chaeyoonakim/chaeyoonakim.github.io
+cd chaeyoonakim.github.io
+pip install numpy scipy scikit-learn matplotlib
+python scripts/posts/auroc_experiments.py
+```
+
+The script prints every table in this post and regenerates the five figures. Change the
+prevalence, separation or sample size and watch which metrics move.
+
+## References
+
+- Hanley JA, McNeil BJ (1982). [The meaning and use of the area under a receiver operating characteristic (ROC) curve](https://doi.org/10.1148/radiology.143.1.7063747). *Radiology* 143(1).
+- DeLong ER, DeLong DM, Clarke-Pearson DL (1988). [Comparing the areas under two or more correlated ROC curves: a nonparametric approach](https://doi.org/10.2307/2531595). *Biometrics* 44(3).
+- Davis J, Goadrich M (2006). [The relationship between precision-recall and ROC curves](https://doi.org/10.1145/1143844.1143874). *ICML*.
+- Saito T, Rehmsmeier M (2015). [The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets](https://doi.org/10.1371/journal.pone.0118432). *PLoS ONE*.
+- Vickers AJ, Elkin EB (2006). [Decision curve analysis: a novel method for evaluating prediction models](https://doi.org/10.1177/0272989X06295361). *Medical Decision Making*.
+- Van Calster B et al. (2019). [Calibration: the Achilles heel of predictive analytics](https://doi.org/10.1186/s12916-019-1466-7). *BMC Medicine*.
+- Collins GS et al. (2024). [TRIPOD+AI statement](https://doi.org/10.1136/bmj-2023-078378). *BMJ*.
+
+## Further reading on this site
 
 - [**Predicting missed outpatient appointments: two case studies and what the evidence says**](/2026/10/04/predicting-missed-appointments-case-studies/)
-  — where these metrics were put to work.
+  — these metrics applied to a real problem.
 - [**Accuracy matters, but usefulness matters more**](/2026/04/28/accuracy-matters-usefulness-more/)
-- Saito & Rehmsmeier (2015), PLoS ONE —
-  [The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets](https://doi.org/10.1371/journal.pone.0118432)
-- Van Calster et al. (2019), BMC Medicine —
-  [Calibration: the Achilles heel of predictive analytics](https://doi.org/10.1186/s12916-019-1466-7)
-- Vickers & Elkin (2006), Medical Decision Making —
-  [Decision curve analysis: a novel method for evaluating prediction models](https://doi.org/10.1177/0272989X06295361)

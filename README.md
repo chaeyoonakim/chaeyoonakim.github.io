@@ -18,6 +18,7 @@ index.html       # homepage — hero · about · projects · writing
 cv.html          # standalone CV page at /cv
 scripts/
   build_cv.py    # regenerates assets/Chaeyoon_Kim_CV.pdf (not published)
+  posts/         # reproducible experiments and figures behind specific posts
 _config.yml      # site metadata (title, url, plugins, collections)
 Gemfile          # Jekyll 4.3 + jekyll-feed, used by CI
 ```
