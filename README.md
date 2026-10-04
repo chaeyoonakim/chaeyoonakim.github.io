@@ -102,7 +102,7 @@ title: "Project title"
 period: "May 2026"            # display string shown on the card (use 'period', not 'date')
 context: "Hackathon · NHS"   # shown after period with · separator
 github: "https://github.com/chaeyoonakim/your-repo"
-url: "https://your-app.example.com/"  # optional — live app; card opens it and shows a "Source code" pill for the repo
+app_url: "https://your-app.example.com/"  # optional — live app; card opens it and shows "Live app" and "Repository" pills
 badge: "In Progress"         # optional pill label (e.g. "1st Place", "In Progress")
 featured: true               # optional — spans full grid width, shows thumbnail
 thumb: "/assets/img/your-thumbnail.jpg"  # local path or absolute https:// URL

@@ -82,7 +82,7 @@ story.append(Paragraph(
     f'&nbsp;&nbsp;|&nbsp;&nbsp;GitHub {link("@chaeyoonakim", "https://github.com/chaeyoonakim")}', contact))
 story.append(Spacer(1, 14))
 story.append(Paragraph(
-    "Certified AI Ethicist and Data Scientist with 4+ years of UK public sector experience, following 6.5 years "
+    "Certified AI Ethicist and Data Scientist with about 5 years of UK public sector experience, following 6.5 years "
     "in semiconductor engineering at Samsung Electronics. Specialised in large-scale analytics, AI "
     "engineering, and healthcare workforce modeling. Proven track record of building LLM-powered applications in "
     "Python and PySpark, while leading reproducible, secure analytics engineering for the NHS workforce across England.",
@@ -153,7 +153,7 @@ story.append(Paragraph("AI &amp; Machine Learning engineering:", sub))
 for lbl, txt in [
     (link("Endo Loop:", "https://engine-ai-hackathon-frontend.vercel.app/"), "Co-built a non-diagnostic, at-home pattern journal for endometriosis and chronic pelvic pain, "
      "combining voice or manual symptom logs with wearable signals in a deterministic, safety-guarded pattern "
-     "engine; awarded joint 5th place at the eMed and OpenAI Reimagine Health "
+     "engine; awarded 4th place at the eMed and OpenAI Reimagine Health "
      "hackathon (Jul 2026)."),
     (link("NoteGuard:", "https://huggingface.co/spaces/chaeyoona/noteguard-agent"), "Built a trust layer for clinical AI: a LangGraph agent that de-identifies NHS "
      "clinical free-text before any model sees it, so an LLM can safely draft discharge summaries with a measured "
