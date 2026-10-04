@@ -67,6 +67,7 @@ with a fixed random seed.
 7. Calibration: can you read the score as a probability?
 8. Net benefit: is the model worth using at all?
 9. What to report, and common traps
+10. Three questions before you trust a risk model
 
 ---
 
