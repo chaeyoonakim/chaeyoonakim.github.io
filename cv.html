@@ -10,7 +10,8 @@ title: CV
   <h1 class="cv-page-title">Experience &amp;<br>education.</h1>
 
   <p class="cv-summary">
-    Certified AI Ethicist and Data Scientist with 4+ years of UK public sector experience.
+    Certified AI Ethicist and Data Scientist with 4+ years of UK public sector experience,
+    following 6.5 years in semiconductor engineering at Samsung Electronics.
     Specialised in large-scale analytics, AI engineering, and healthcare workforce modeling.
     Proven track record of building LLM-powered applications in Python and PySpark, while
     leading reproducible, secure analytics engineering for the NHS workforce across England.
@@ -20,6 +21,7 @@ title: CV
     <span class="cv-tag">Python</span>
     <span class="cv-tag">PySpark</span>
     <span class="cv-tag">Databricks</span>
+    <span class="cv-tag">Azure (ADLS Gen2)</span>
     <span class="cv-tag">R</span>
     <span class="cv-tag">SQL</span>
     <span class="cv-tag">LLMs</span>
@@ -38,11 +40,13 @@ title: CV
           <p class="cv-item-org">NHS England · London, UK</p>
           <ul class="cv-bullets">
             <li>Redesigned the CT1 training-place allocation methodology from a weighted multi-criteria model into a rule-based model in Python and Excel, presenting outputs via Tableau to inform prioritisation for under-doctored deaneries during 2024 BMA industrial-action negotiations.</li>
-            <li>Lead Developer for the 10-Year Workforce Plan under NHSE's Business Critical Model governance: coordinating with UDAL Data Engineers on secure Azure Data Lake environments and building pipelines in SQL, Python and PySpark; co-led the migration of legacy PySpark pipelines off deprecated DBFS onto Entra-secured Data Lake containers, and coordinated Windows 11 migration testing to protect BCM continuity.</li>
-            <li>Led the transition of legacy Excel workforce models into reproducible Python and PySpark pipelines, addressing National Audit Office recommendations through documented assumptions, strengthened data lineage and peer-reviewed Git version control — cutting model runtime by around half.</li>
-            <li>As Community Pharmacy modelling workstream lead, coordinated a dozen stakeholder groups — including pharmacy Deans and Chief Pharmaceutical Officers — into a single delivery scope, launched a Pythonised supply-and-demand model within six months and secured the model SRO's approval despite late changes to baseline and counterfactual assumptions.</li>
-            <li>Designed an NLTK-based sentiment-analysis pipeline for the Reporting, Insights, Publications and Transparency programme and contributed to a paper on insights maturity for the CEO's office and Board; presented 10YWP model components to the External Scrutiny Panel and the national consultation on Community Pharmacy workforce interventions.</li>
-            <li>Delivered Python, PySpark and Git training and onboarding for analysts and new data scientists, promoting coding best practice across the modelling team.</li>
+            <li>Lead Developer for the 10-Year Workforce Plan modelling under NHS England's Business Critical Model (BCM) governance: validating the model's key assumptions in Python and PySpark, working with Department of Health and Social Care and NHS England policy leads to shape the response to National Audit Office recommendations, and presenting model components to the External Scrutiny Panel.</li>
+            <li>Manage the project's dedicated Azure Data Lake Storage (ADLS Gen2) and Databricks clusters, coordinating with UDAL Data Engineers on secure environments; co-led the migration of legacy PySpark pipelines off deprecated DBFS onto Entra-secured Data Lake containers, and coordinated Windows 11 migration testing to protect BCM continuity.</li>
+            <li>Led the transition of legacy Excel workforce models into automated Databricks and Python pipelines with documented assumptions, strengthened data lineage and peer-reviewed Git version control; refactored the Python codebase to cut model runtime by around half and enable cross-functional teams to extend it.</li>
+            <li>As Community Pharmacy modelling workstream lead, coordinated a dozen stakeholder groups — including pharmacy Deans and Chief Pharmaceutical Officers — into a single delivery scope, launched a Pythonised supply-and-demand model within six months, secured the model SRO's approval despite late changes to baseline and counterfactual assumptions, and presented it at the national consultation on Community Pharmacy workforce interventions.</li>
+            <li>Designed an NLTK-based sentiment-analysis pipeline for the Reporting, Insights, Publications and Transparency programme and contributed to a paper on insights maturity for the CEO's office and Board; applied NLP and sentiment analysis to meeting transcripts to assess staff views on organisational change and internal AI adoption.</li>
+            <li>Conduct horizon scanning of emerging data and AI engineering practice, including exploratory research into AI-enabled gains in workforce productivity.</li>
+            <li>Delivered Python, Databricks, PySpark and Git training and onboarding for analysts and new data scientists, promoting coding best practice across the modelling team.</li>
           </ul>
         </div>
       </li>
@@ -69,6 +73,19 @@ title: CV
           </ul>
         </div>
       </li>
+      <li class="cv-item">
+        <span class="cv-item-period">Jul 2011 — Jan 2018</span>
+        <div>
+          <p class="cv-item-title">Engineer</p>
+          <p class="cv-item-org">Samsung Electronics, Foundry Business · Gyeonggi-do, South Korea</p>
+          <ul class="cv-bullets">
+            <li>Operated Chemical Vapour Deposition (CVD) equipment in 24/7 shift operations for high-volume 32/28nm and 14/10nm semiconductor production, and supported set-up and ramp-up of a new 7/10nm line.</li>
+            <li>Established maintenance SOPs and data-driven part-replacement criteria by evaluating correlations between plasma process parameters and component condition.</li>
+            <li>Derived optimal process conditions through simulation built on deposition and clean measurements, suppressing particle generation and improving yield.</li>
+            <li>Owned equipment asset and standards management on the Equipment Engineering System (EES): built gas and chemical usage metering and monitoring that detected unnecessary utility consumption and cut costs; with EES Master privileges, configured thin-film unit-process alarms and implemented Tool-to-Tool Matching (TTTM).</li>
+          </ul>
+        </div>
+      </li>
     </ul>
   </div>
 
@@ -91,11 +108,12 @@ title: CV
           <p class="cv-item-title">LLM &amp; machine learning prototypes</p>
           <p class="cv-item-org">NHS · Hackathons &amp; conferences</p>
           <ul class="cv-bullets">
+            <li><strong><a href="https://github.com/chaeyoonakim/endo-loop">Endo Loop</a></strong> — non-diagnostic, at-home pattern journal for endometriosis and chronic pelvic pain, combining voice or manual symptom logs with wearable signals in a deterministic pattern engine with safety rules and a clinician-ready summary; joint 5th place at the eMed &amp; OpenAI Reimagine Health hackathon (Jul 2026).</li>
+            <li><strong>NHS Policy Navigator</strong> — adaptive Retrieval-Augmented Generation pipeline over the published 10-Year Health Plan and public NHS news feeds, built at the MongoDB Agentic Evolution Hackathon (May 2026) and refined with a working group through a spec-driven development cycle at near-zero infrastructure cost.</li>
             <li><strong>Pharmacy First agent</strong> — LLM-powered analysis of NHS pharmacy operations, open-sourced and presented at PyConUK, NHS RPySOC and HACA 2025.</li>
-            <li><strong>NHS Policy Navigator</strong> — adaptive Retrieval-Augmented Generation pipeline over the published 10-Year Health Plan and public NHS news feeds, refined with a working group through a spec-driven development cycle at near-zero infrastructure cost.</li>
-            <li><strong>Reducing missed NHS appointments</strong> — ML solution for a No. 10 Downing Street data science hackathon, targeting waitlist cost.</li>
-            <li><strong>NHS Career Coach</strong> — POC chatbot on Microsoft AI Studio; 2nd place hackathon, showing how LLMs can support candidates.</li>
-            <li><strong>OPEL prediction</strong> — ML models on the NHS Federated Data Platform during a Palantir &amp; KPMG hackathon.</li>
+            <li><strong>Reducing missed NHS appointments</strong> — ML solution for a No. 10 Downing Street data science hackathon (Sep 2025), targeting waitlist cost.</li>
+            <li><strong><a href="https://github.com/nhsengland/hack-for-health-nov-2024-team-4">NHS Career Coach</a></strong> — multilingual career-guidance chatbot on Azure AI Foundry that retrieves and cites Health Education England careers content and adapts its guidance to user personas; 2nd place at the NHS England, Microsoft &amp; Kainos Hack for Health hackathon (Nov 2024; <a href="https://nhsengland.github.io/datascience/articles/2024/12/04/microsoft-hackathon/">write-up</a>).</li>
+            <li><strong>OPEL prediction</strong> — ML models on the NHS Federated Data Platform during a Palantir &amp; KPMG hackathon (Nov 2024).</li>
           </ul>
         </div>
       </li>
@@ -112,10 +130,11 @@ title: CV
       <li class="cv-item">
         <span class="cv-item-period">Research</span>
         <div>
-          <p class="cv-item-title">Textbook contribution</p>
-          <p class="cv-item-org">Foundations of Programming, Statistics, and ML for Business Analytics</p>
+          <p class="cv-item-title">Publications</p>
+          <p class="cv-item-org">Peer-reviewed paper · Textbook</p>
           <ul class="cv-bullets">
-            <li>Developed R and Python conversion code for the English edition (Apr 2023); co-authored the Korean translated edition (Feb 2025).</li>
+            <li>Kim, C. and Jiménez-Ruiz, E. (2022) <a href="https://ceur-ws.org/Vol-3119/paper8.pdf">CitySAT: a System for the Semantic Answer Type Prediction Task</a>. CEUR Workshop Proceedings, Vol. 3119 (SMART 2021, ISWC Semantic Web Challenge), pp. 77–88. First author.</li>
+            <li><em>Foundations of Programming, Statistics, and ML for Business Analytics</em> — developed R and Python conversion code for the English edition (Apr 2023); co-authored the Korean translated edition (Feb 2025).</li>
           </ul>
         </div>
       </li>
@@ -131,7 +150,7 @@ title: CV
           <p class="cv-item-title">MSc Data Science — Distinction</p>
           <p class="cv-item-org">City St George's, University of London</p>
           <ul class="cv-bullets">
-            <li>Awarded 1st rank for the System for the Semantic Answer Type Prediction Task; presented at the International Semantic Web Conference (ISWC), October 2021.</li>
+            <li>Ranked 1st on the global leaderboard of the International Semantic Web Conference (ISWC) 2021 SMART Challenge as a sole entrant with CitySAT, a two-stage hybrid system using Logistic Regression for answer category and literal types and a Multi-Layer Perceptron over ~760 DBpedia ontology classes; achieved 98.4% accuracy and 84.2% NDCG@5 on the official test set, and delivered an oral presentation and a poster at ISWC in October 2021.</li>
           </ul>
         </div>
       </li>
@@ -159,15 +178,39 @@ title: CV
   </div>
 
   <div class="cv-block">
+    <p class="cv-block-label">Certifications</p>
+    <ul class="cv-list">
+      <li class="cv-item">
+        <span class="cv-item-period">Apr 2026</span>
+        <div>
+          <p class="cv-item-title">Certified AI Ethicist (CAIE)</p>
+          <p class="cv-item-org">oxethica</p>
+        </div>
+      </li>
+      <li class="cv-item">
+        <span class="cv-item-period">Mar 2026</span>
+        <div>
+          <p class="cv-item-title">Oxford AI Ethics, Regulation and Compliance Programme</p>
+          <p class="cv-item-org">Saïd Business School, University of Oxford</p>
+          <ul class="cv-bullets">
+            <li>Completed the programme (<a href="https://certify.sbs.ox.ac.uk/22a357d7-9ddb-483c-bdf4-9cf8ed2d355f">credential</a>); published the reflective article "<a href="https://www.sbs.ox.ac.uk/oxford-experience/blogs/chaeyoon-kim/stepping-back-my-technical-day-day-and-history-philosophy-and-regulation">Stepping back from my technical day-to-day and into history, philosophy and regulation</a>" on the Saïd Business School Oxford Experience blog.</li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="cv-block">
     <p class="cv-block-label">Community &amp; Volunteering</p>
     <ul class="cv-list">
       <li class="cv-item">
         <span class="cv-item-period">2025 —</span>
         <div>
-          <p class="cv-item-title">LangChain Ambassador</p>
-          <p class="cv-item-org">London</p>
+          <p class="cv-item-title">Global Ambassador</p>
+          <p class="cv-item-org">LangChain · London</p>
           <ul class="cv-bullets">
             <li>Hosting technical meetups and organising a hackathon in central London.</li>
+            <li>Collaborated with AI builder communities across North and South America (including Halifax and Buenos Aires) in 2025, and with engineering communities across Europe (including Amsterdam, Munich, Zurich, Stockholm and Paris) in 2026.</li>
           </ul>
         </div>
       </li>
@@ -187,7 +230,18 @@ title: CV
           <p class="cv-item-title">Professional Mentor</p>
           <p class="cv-item-org">University of Greenwich · City St George's</p>
           <ul class="cv-bullets">
-            <li>Supporting early career interview preparation.</li>
+            <li>Supporting early career interview preparation for 3+ years.</li>
+            <li>Recognised at City St George's 2025 Professional Mentoring Awards and featured in the alumni article "<a href="https://blogs.city.ac.uk/city-alumni/2025/10/28/celebrating-professional-mentoring-a-great-mentor-is-both-generous-and-curious/">A great mentor is both generous and curious</a>".</li>
+          </ul>
+        </div>
+      </li>
+      <li class="cv-item">
+        <span class="cv-item-period">Ongoing</span>
+        <div>
+          <p class="cv-item-title">Conference &amp; community organiser</p>
+          <p class="cv-item-org">PyCon UK · London tech meetups</p>
+          <ul class="cv-bullets">
+            <li>Volunteer at PyCon UK and other leading UK technology conferences; planned or helped run local meetups ranging from 50 to 600+ attendees.</li>
           </ul>
         </div>
       </li>
