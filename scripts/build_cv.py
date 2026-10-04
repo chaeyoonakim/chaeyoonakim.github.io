@@ -153,7 +153,7 @@ story.append(Paragraph("AI &amp; Machine Learning engineering:", sub))
 for lbl, txt in [
     (link("Endo Loop:", "https://engine-ai-hackathon-frontend.vercel.app/"), "Co-built a non-diagnostic, at-home pattern journal for endometriosis and chronic pelvic pain, "
      "combining voice or manual symptom logs with wearable signals in a deterministic, safety-guarded pattern "
-     "engine; awarded joint 5th place at the eMed and OpenAI Reimagine Health "
+     "engine; awarded 4th place at the eMed and OpenAI Reimagine Health "
      "hackathon (Jul 2026)."),
     (link("NoteGuard:", "https://huggingface.co/spaces/chaeyoona/noteguard-agent"), "Built a trust layer for clinical AI: a LangGraph agent that de-identifies NHS "
      "clinical free-text before any model sees it, so an LLM can safely draft discharge summaries with a measured "
