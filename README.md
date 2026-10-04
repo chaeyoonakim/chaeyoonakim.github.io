@@ -42,7 +42,7 @@ Full Markdown content rendered on the site. Appears under **Reflections & projec
 ---
 layout: post
 type: reflection
-title: "What I learnt building the PWR elasticity model"
+title: "What I learnt building the NHS Policy Navigator"
 date: 2026-05-25
 summary: "One-line description shown on the homepage card."
 tags: [econometrics, NHS, panel-data]
