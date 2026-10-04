@@ -196,7 +196,7 @@ entry("MSc Data Science (Distinction) – City St George’s, University of Lond
     "literal types and a Multi-Layer Perceptron over ~760 DBpedia ontology classes; achieved 98.4% accuracy and "
     "84.2% NDCG@5 on the official test set, and delivered an oral presentation and a poster at ISWC in October 2021.",
 ])
-entry("PgCert Data Analytics – University of Sheffield (Sheffield, UK)", "Sep 2018 – Jul 2020", [
+entry("PGCert. Data Analytics – University of Sheffield (Sheffield, UK)", "Sep 2018 – Jul 2020", [
     b("Modules include", "Computer Security and Forensics, Machine Learning and Adaptive Intelligence, Statistical "
       "Data Science in R."),
 ])
@@ -204,7 +204,9 @@ entry("BSc Electronic Engineering – Kyungpook National University (Daegu, Sout
     b("Modules include", "Electronic Engineering Lab (MATLAB), Calculus, Numerical Analysis."),
 ])
 sec("CERTIFICATIONS")
-entry("Certified AI Ethicist (CAIE) – oxethica", "Apr 2026", [])
+entry("Certified AI Ethicist (CAIE) – oxethica", "Apr 2026", [
+    f"Certified by oxethica ({link('credential', 'https://www.virtualbadge.io/certificate-validator?credential=1e3d9a6e-545f-43de-b0e3-8bd943998155')}).",
+])
 entry("Oxford AI Ethics, Regulation and Compliance Programme – Saïd Business School, University of Oxford",
       "Mar 2026", [
     f"Completed the programme ({link('credential', 'https://certify.sbs.ox.ac.uk/22a357d7-9ddb-483c-bdf4-9cf8ed2d355f')}); published the reflective article "
@@ -214,17 +216,17 @@ entry("Oxford AI Ethics, Regulation and Compliance Programme – Saïd Business 
 
 sec("VOLUNTEERING")
 story.append(Paragraph(b("The UK-Korea Global Health Forum working group:",
-    "organising a conference with senior researchers at the London School of Hygiene &amp; Tropical Medicine (LSHTM)."),
+    "organised a conference with senior researchers at the London School of Hygiene &amp; Tropical Medicine (LSHTM)."),
     plain))
 story.append(Paragraph(b("Professional Mentor at the University of Greenwich, and City St George’s, University of London:",
-    "supporting early career interview preparation for 3+ years; recognised at City St George’s 2025 Professional "
+    "supported early career interview preparation for 3+ years; recognised at City St George’s 2025 Professional "
     f"Mentoring Awards and featured in the alumni article “{link('A great mentor is both generous and curious', 'https://blogs.city.ac.uk/city-alumni/2025/10/28/celebrating-professional-mentoring-a-great-mentor-is-both-generous-and-curious/')}”."), plain))
 story.append(Paragraph(b("Global Ambassador at LangChain:",
-    "hosting technical meetups and organising a hackathon in central London; collaborated with AI builder "
+    "hosted technical meetups and organised a hackathon in central London; collaborated with AI builder "
     "communities across North and South America (including Halifax and Buenos Aires) in 2025, and with engineering "
     "communities across Europe (including Amsterdam, Munich, Zurich, Stockholm and Paris) in 2026."), plain))
 story.append(Paragraph(b("Conference and community organiser:",
-    "volunteer at PyCon UK and other leading UK technology conferences; planned or helped run local meetups "
+    "volunteered at PyCon UK and other leading UK technology conferences; planned or helped run local meetups "
     "ranging from 50 to 600+ attendees."), plain))
 
 out = sys.argv[1] if len(sys.argv) > 1 else "assets/Chaeyoon_Kim_CV.pdf"
