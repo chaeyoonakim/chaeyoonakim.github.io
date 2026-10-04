@@ -162,8 +162,7 @@ for lbl, txt in [
      "Health Plan and public NHS news feeds at the MongoDB Agentic Evolution Hackathon (May 2026), then refined it "
      "with a working group through a spec-driven development cycle at near-zero infrastructure cost."),
     ("Pharmacy First agent:", "Presented an LLM-powered analysis about NHS Pharmacy operation with open source "
-     "at PyConUK, NHS RPySOC conference, and "
-     f"{link('Health and Care Analytics (HACA) conference 2025', 'https://nat-stephenson.github.io/HACA_Quarto_Book/theme3.html')}."),
+     "at PyConUK, NHS RPySOC conference, and Health and Care Analytics (HACA) conference 2025."),
     ("Reducing the missed NHS appointments:", "Proposed a ML solution to reduce the millions costs and increasing "
      "waitlists for a hackathon challenge set by the Number 10 Downing Street data science team (Sep 2025)."),
     ("AI for NHS Healthcare professionals:", "Co-developed a multilingual “NHS Career Coach” on Azure AI Foundry "
