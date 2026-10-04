@@ -8,5 +8,5 @@ thumb: "/assets/img/smart-poster-thumb.png"
 thumb_alt: "CitySAT poster presented at SMART 2021 / ISWC"
 excerpt: "MSc dissertation submitted to the SMART 2021 shared task at the International Semantic Web Conference. Ranked 1st for classifying the expected answer type — entity, literal, or boolean — from natural-language questions over a knowledge graph."
 group: left
-order: 4
+order: 3
 ---
