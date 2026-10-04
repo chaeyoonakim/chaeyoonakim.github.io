@@ -28,6 +28,22 @@ tags: [auroc, roc-curve, precision-recall, calibration, decision-curve, brier-sc
 >   prevalence baseline, precision@k at real capacity, a calibration plot, and a
 >   decision curve. Break all of them down by subgroup.
 
+## "So, is 0.75 good?"
+
+Picture the end of a model review. The data scientist puts up the final slide: **"AUROC
+0.75"**. There's a pause, and then the service manager asks the only question that
+matters to them:
+
+> "So if my team phones the twenty patients your model picks each week, how many of
+> them would actually have missed their appointment?"
+
+AUROC can't answer that question. Neither can accuracy, F1 or most of the numbers that
+end up on the last slide. They aren't wrong; they answer **different questions**. The
+skill is knowing which number answers which question, and which questions no single
+number can answer.
+
+> **"A metric is an answer. Before you quote it, make sure you know the question."**
+
 While writing up
 [two case studies on predicting missed outpatient appointments](/2026/10/04/predicting-missed-appointments-case-studies/),
 I kept using shorthand like "AUROC 0.77", "PR-AUC against a 0.10 baseline" and
@@ -61,6 +77,11 @@ A risk model outputs a **score** for each case, usually between 0 and 1. For exa
 
 - a **threshold** ("flag everyone at or above 0.5"), or
 - a **capacity** ("call the 20 highest-scoring patients this week").
+
+Think of a popular restaurant on a Friday night. The **score** is the queue outside,
+ordered by how likely each guest is to want a table. The **threshold** or **capacity**
+is the rope at the door: "seats for twenty". Some metrics judge how well the queue is
+ordered. Others judge who actually got through the rope. They are different questions.
 
 That splits evaluation metrics into two families:
 
@@ -143,6 +164,13 @@ The area under that curve has an exact probabilistic meaning (Hanley & McNeil, 1
 > **AUROC = P(score of a random positive > score of a random negative)**,
 > counting ties as ½.
 
+**An analogy: a round-robin tournament.** Put every patient who missed in one team and
+every patient who attended in the other. Each player from the first team plays a
+head-to-head match against every player from the second, and the higher score wins.
+**AUROC is the first team's win rate.** It says nothing about by how much they won,
+or about which matches you'll actually watch. Keep that in mind; it explains every
+limitation below.
+
 Check it by hand on the worked example. There are 3 positives × 7 negatives = **21
 pairs**:
 
@@ -208,6 +236,9 @@ noise: there are only about 2,000 positives). Precision in the top 10% falls fro
 to 3%, the difference between "most calls are useful" and "almost none are". **A model
 with "good" AUROC can still be operationally poor when the outcome is rare.**
 
+> **"AUROC asks whether the queue is in the right order. It never asks how many of the
+> people at the front are worth calling."**
+
 ### 4.4 Same AUROC, different models
 
 AUROC averages over **every** threshold equally, including thresholds you would never
@@ -228,6 +259,8 @@ very confident about some positives and lost on the rest. Prevalence is 10%:
 *Figure 3. Two models with the same AUROC. Model B is far better in the shaded region
 (FPR below 5%), which is where a team with limited capacity operates. Model A wins only
 at thresholds nobody uses.*
+
+> **"A tie on the leaderboard is not a tie on the ward."**
 
 A booking team that can call 1% of patients finds missed appointments at **94%
 precision with Model B and 53% with Model A**, from models that a leaderboard sorted by
@@ -300,7 +333,9 @@ Three things to know:
 
 ## 6. Precision@k: the metric for teams with finite capacity
 
-If a team can act on **k** cases per period, only the top k of the ranking matter:
+A team with twenty phone slots is like a lifeboat with twenty seats. What matters is who
+is **in the boat**, not how well the whole queue on the deck was ordered. If a team can
+act on **k** cases per period, only the top k of the ranking matter:
 
 ```python
 def precision_at_k(y_true, scores, k):
@@ -329,8 +364,15 @@ Two cautions:
 
 ## 7. Calibration: can you read the score as a probability?
 
-A model is **calibrated** if, among cases scored at 0.2, about 20% are positive. AUROC
-can't see this (property 1 in section 4.3), so it needs its own checks.
+Think of a weather forecaster. On all the days she says "70% chance of rain", it should
+rain on about 70% of them. If it rains on only 40%, she may still be excellent at telling
+wet days from dry ones (good **ranking**), but you can't plan a picnic on her numbers
+(poor **calibration**).
+
+A model is **calibrated** in the same sense: among cases scored at 0.2, about 20% are
+positive. AUROC can't see this (property 1 in section 4.3), so it needs its own checks.
+
+> **"Ranking well and telling the truth about probabilities are two different skills."**
 
 **Experiment 4: distort the probabilities, watch AUROC stay still.**
 
@@ -393,8 +435,10 @@ For a threshold probability *pₜ*:
 > **Net benefit = TP / N − (FP / N) × pₜ / (1 − pₜ)**
 
 The factor *pₜ* / (1 − *pₜ*) is an **exchange rate**. Choosing *pₜ* = 0.10 says "I'd
-accept 9 unnecessary calls to prevent one missed appointment". The model is compared
-with two defaults: **call everyone** and **call no one** (net benefit 0).
+accept 9 unnecessary calls to prevent one missed appointment". It works like an
+insurance premium: how much unnecessary effort you're willing to pay to prevent one bad
+outcome. The model is compared with two defaults: **call everyone** and **call no one**
+(net benefit 0).
 
 ![Decision curve: the model's net benefit stays above both 'call everyone', which drops below zero at a 0.10 threshold, and 'call no one' across thresholds from 0.02 to 0.40.](/assets/img/auroc/decision-curve.png)
 
@@ -444,6 +488,29 @@ turns this into a checklist, including fairness items.
 6. **Showing uncalibrated scores as percentages** to people who will act on them.
 7. **Celebrating a suspiciously high AUROC.** On noisy human outcomes, 0.90 more often
    means leakage, such as a feature recorded after the outcome, than a breakthrough.
+
+## Three questions before you trust a risk model
+
+Back to the service manager's question. Before any model goes in front of a team, it
+should be able to answer three questions, in this order:
+
+**First, does it rank?**
+Is the AUROC clearly above 0.5, with a confidence interval that excludes "weak", on a
+validation set that mimics deployment (split by time, grouped by patient)? If not, stop
+here.
+
+**Second, does it work where we act?**
+At the team's real capacity, what are precision@k and lift? This is the honest answer
+to "how many of the twenty would have missed?" A model that ranks well on average but
+poorly at the top is the wrong model for a team with twenty slots.
+
+**Third, can its numbers be believed, and is acting on them worth it?**
+Is it calibrated, so a "20%" on screen means 20%? Does the decision curve stay above
+"call everyone" and "call no one" across the exchange rates the service would accept?
+And do all three answers hold for every patient group, not just on average?
+
+> **"A good model isn't the one with the highest number on the last slide. It's the one
+> whose numbers answer the questions the people using it actually ask."**
 
 ## Reproduce it
 
