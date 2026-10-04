@@ -16,6 +16,8 @@ assets/
   img/           # static images (e.g. project poster thumbnails)
 index.html       # homepage — hero · about · projects · writing
 cv.html          # standalone CV page at /cv
+scripts/
+  build_cv.py    # regenerates assets/Chaeyoon_Kim_CV.pdf (not published)
 _config.yml      # site metadata (title, url, plugins, collections)
 Gemfile          # Jekyll 4.3 + jekyll-feed, used by CI
 ```
@@ -113,6 +115,17 @@ order: 6                     # controls display order (lower = first)
 - Use `period` not `date` — Jekyll tries to parse `date` as a Ruby date object.
 - `thumb` accepts a local path or an absolute URL. Pin external images to a commit SHA for stability.
 - CI validates every `thumb` value on each PR: external URLs via `curl --location`, local paths against built `_site/`.
+
+## Updating the CV
+
+The CV lives in two places: `cv.html` (the `/cv` page) and the downloadable
+`assets/Chaeyoon_Kim_CV.pdf`. Edit the text in both `cv.html` and
+`scripts/build_cv.py`, then regenerate the PDF:
+
+```bash
+pip install reportlab
+python scripts/build_cv.py
+```
 
 ## License
 
