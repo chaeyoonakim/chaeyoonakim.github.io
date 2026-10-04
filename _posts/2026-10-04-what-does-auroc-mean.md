@@ -52,9 +52,9 @@ statistics underneath, and tests each claim with an experiment you can rerun. Th
 examples are about missed hospital appointments ("Did Not Attend", or DNA), but the
 ideas apply to any binary risk model: fraud, churn, readmission, credit default.
 
-Every number and figure below is produced by
-[`scripts/posts/auroc_experiments.py`](https://github.com/chaeyoonakim/chaeyoonakim.github.io/blob/main/scripts/posts/auroc_experiments.py)
-with a fixed random seed.
+The experiments use simulated data with a fixed random seed. Each one states its set-up
+(model, prevalence, sample size) next to the results, so you can rebuild it in a few
+lines of scikit-learn.
 
 ## Contents
 
@@ -66,8 +66,9 @@ with a fixed random seed.
 6. Precision@k: the metric for teams with finite capacity
 7. Calibration: can you read the score as a probability?
 8. Net benefit: is the model worth using at all?
-9. What to report, and common traps
-10. Three questions before you trust a risk model
+9. Beyond AUROC: more metrics worth knowing
+10. What to report, and common traps
+11. Three questions before you trust a risk model
 
 ---
 
@@ -458,7 +459,63 @@ correctly targeted per 100 patients, at no false-positive cost. If a model's cur
 below "call everyone" or "call no one" across the plausible range of *pₜ*, it
 shouldn't be deployed, however good its AUROC.
 
-## 9. What to report, and common traps
+## 9. Beyond AUROC: more metrics worth knowing
+
+The metrics above cover most risk-model reviews. These are the others you will meet in
+papers, vendor reports and model cards, with the worked-example value where one
+applies (threshold 0.5: TP 2, FP 2, FN 1, TN 5):
+
+### Threshold metrics that cope with imbalance
+
+| Metric | Formula / idea | Worked example | When it helps | Watch out for |
+|---|---|---:|---|---|
+| **Balanced accuracy** | (recall + specificity) / 2 | 0.69 | A quick fix for the "accuracy on rare outcomes" trap; 0.5 = chance | Still hides the precision cost |
+| **Matthews correlation coefficient (MCC)** | (TP·TN − FP·FN) / √[(TP+FP)(TP+FN)(TN+FP)(TN+FN)] | 0.36 | One threshold number that uses all four cells; −1 to +1, 0 = chance | Hard to explain to non-specialists |
+| **Cohen's kappa** | (observed agreement − chance agreement) / (1 − chance agreement) | 0.35 | Agreement beyond chance, e.g. model vs human coder | Depends on prevalence; can be low even when agreement looks high |
+| **F-beta (F2, F0.5)** | Weighted harmonic mean; β > 1 favours recall | F2 0.63 · F0.5 0.53 | When missing a positive costs more (F2) or less (F0.5) than a false alarm | The weight should come from real costs, not habit |
+| **Negative predictive value (NPV)** | TN / (TN + FN) | 0.83 | "If the model says *attend*, how sure can we be?" — key for rule-out tools | Depends on prevalence, like precision |
+| **Youden's J** | recall + specificity − 1 | 0.38 | Picks a threshold that balances the two error rates | Assumes both errors cost the same, which they rarely do |
+
+### Ranking and threshold-free metrics
+
+| Metric | What it measures | Worked example | Note |
+|---|---|---:|---|
+| **Kolmogorov–Smirnov (KS)** | Largest gap between TPR and FPR over all thresholds | 0.57 | Common in credit scoring; it's the tallest vertical gap between the ROC curve and the diagonal |
+| **Partial AUROC** | Area under the ROC curve within a chosen FPR range (e.g. 0–5%) | — | Focuses on the region a capacity-limited team uses (section 4.4) |
+| **Sensitivity at fixed specificity** | Recall when specificity is held at, say, 95% | — | Common in screening studies; easy to explain |
+| **NDCG@k, MRR, hit@k** | How high the right answers appear in a ranked list | — | The language of search and recommendation; NDCG@5/@10 scored my SMART 2021 answer-type system |
+
+### Probability and calibration metrics
+
+| Metric | What it measures | Worked example | Note |
+|---|---|---:|---|
+| **Log loss (cross-entropy)** | Average −log(probability given to the true outcome) | 0.52 (vs 0.61 for always predicting 0.3) | Punishes confident wrong answers hard; the loss most models are trained on |
+| **Expected calibration error (ECE)** | Weighted average gap between predicted and observed rates across bins | 0.20 (5 bins) | Popular in ML papers, but sensitive to the binning choice; prefer a plot plus slope and intercept |
+
+### Operational metrics
+
+| Metric | What it measures | Note |
+|---|---|---|
+| **Number needed to alert (NNA)** | 1 / precision@k: actions per true positive found | In the worked example the top 3 contain 2 positives, so NNA@3 = 1.5 calls per missed appointment |
+| **Number needed to treat (NNT)** | 1 / absolute risk reduction from the *intervention* | Not a model metric, but it turns model output into effort: precision tells you who to call, NNT tells you how many calls prevent one miss |
+| **Alert rate** | Share of cases flagged per period | The first number an operations lead asks for; must fit capacity |
+
+### For forecasts and continuous predictions
+
+Not every model in a portfolio is a classifier. For projections and regressions:
+
+| Metric | What it measures | Note |
+|---|---|---|
+| **MAE** | Average absolute error, in the outcome's own units | The easiest to explain |
+| **RMSE** | Square root of average squared error | Penalises large misses more than MAE |
+| **MAPE / sMAPE** | Average percentage error | Unstable when actual values are near zero |
+| **Prediction-interval coverage** | Share of actual values that fall inside the stated interval | A "95%" band that covers 70% of outcomes is a calibration failure |
+| **Backtest (rolling origin)** | Fit on data up to time *t*, forecast *t*+h, repeat | The forecasting equivalent of a temporal split |
+
+> **"More metrics don't make a better evaluation. Choose the few that answer the
+> questions your users ask, and report their baselines."**
+
+## 10. What to report, and common traps
 
 ### Matching questions to metrics
 
@@ -490,7 +547,7 @@ turns this into a checklist, including fairness items.
 7. **Celebrating a suspiciously high AUROC.** On noisy human outcomes, 0.90 more often
    means leakage, such as a feature recorded after the outcome, than a breakthrough.
 
-## Three questions before you trust a risk model
+## 11. Three questions before you trust a risk model
 
 Back to the service manager's question. Before any model goes in front of a team, it
 should be able to answer three questions, in this order:
@@ -512,18 +569,6 @@ And do all three answers hold for every patient group, not just on average?
 
 > **"A good model isn't the one with the highest number on the last slide. It's the one
 > whose numbers answer the questions the people using it actually ask."**
-
-## Reproduce it
-
-```bash
-git clone https://github.com/chaeyoonakim/chaeyoonakim.github.io
-cd chaeyoonakim.github.io
-pip install numpy scipy scikit-learn matplotlib
-python scripts/posts/auroc_experiments.py
-```
-
-The script prints every table in this post and regenerates the five figures. Change the
-prevalence, separation or sample size and watch which metrics move.
 
 ## References
 
