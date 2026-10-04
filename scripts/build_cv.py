@@ -196,7 +196,7 @@ entry("MSc Data Science (Distinction) – City St George’s, University of Lond
     "literal types and a Multi-Layer Perceptron over ~760 DBpedia ontology classes; achieved 98.4% accuracy and "
     "84.2% NDCG@5 on the official test set, and delivered an oral presentation and a poster at ISWC in October 2021.",
 ])
-entry("PGCert Data Analytics – University of Sheffield (Sheffield, UK)", "Sep 2018 – Jul 2020", [
+entry("PGCert. Data Analytics – University of Sheffield (Sheffield, UK)", "Sep 2018 – Jul 2020", [
     b("Modules include", "Computer Security and Forensics, Machine Learning and Adaptive Intelligence, Statistical "
       "Data Science in R."),
 ])
