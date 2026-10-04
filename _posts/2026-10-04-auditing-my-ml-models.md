@@ -9,7 +9,7 @@ tags: [model-register, model-cards, auroc, ndcg, calibration, validation, naive-
 ---
 
 > **TL;DR** — I wrote
-> [a guide to evaluating predictive models](/2026/10/04/what-does-auroc-mean/), then
+> [a guide to evaluating predictive models](/2026/10/04/field-guide-to-evaluating-predictive-models/), then
 > turned its checklist on myself. My public GitHub holds **five trained ML models**
 > built between 2020 and 2025. **All five report a performance number. Only one also
 > reports uncertainty, and none checks performance across subgroups.** Two re-reads
@@ -294,7 +294,7 @@ committing in advance to the questions, so the answers can't be skipped quietly.
 
 ## Further reading on this site
 
-- [**What does an AUROC of 0.75 actually mean?**](/2026/10/04/what-does-auroc-mean/)
+- [**What does an AUROC of 0.75 actually mean?**](/2026/10/04/field-guide-to-evaluating-predictive-models/)
   — the checklist used for this audit.
 - [**Predicting missed outpatient appointments: two case studies and what the evidence says**](/2026/10/04/predicting-missed-appointments-case-studies/)
   — entry 5 in full, with the published evidence.
