@@ -82,7 +82,7 @@ story.append(Paragraph(
     f'&nbsp;&nbsp;|&nbsp;&nbsp;GitHub {link("@chaeyoonakim", "https://github.com/chaeyoonakim")}', contact))
 story.append(Spacer(1, 14))
 story.append(Paragraph(
-    "Certified AI Ethicist and Data Scientist with 4+ years of UK public sector experience, following 6.5 years "
+    "Certified AI Ethicist and Data Scientist with about 5 years of UK public sector experience, following 6.5 years "
     "in semiconductor engineering at Samsung Electronics. Specialised in large-scale analytics, AI "
     "engineering, and healthcare workforce modeling. Proven track record of building LLM-powered applications in "
     "Python and PySpark, while leading reproducible, secure analytics engineering for the NHS workforce across England.",

@@ -5,7 +5,7 @@ Params:
   compact  — when true, suppress the thumbnail (text-only card)
 The card opens `url` (a live app) when set, otherwise `github`. Cards with a
 `links` list or an app `url` use a stretched primary link so the whole card
-opens it while the pill links (including the repo, for app cards) stay
+opens it while the pill links (including the repository, for app cards) stay
 independently clickable; others wrap the whole card in a single anchor.
 {%- endcomment -%}
 {%- assign p = include.project -%}
@@ -20,7 +20,7 @@ independently clickable; others wrap the whole card in a single anchor.
     <span class="post-meta">{{ p.period }}{% if p.context %} &middot; {{ p.context }}{% endif %}</span>
     <a class="post-card-title project-card-stretch" href="{{ primary }}" target="_blank">{{ p.title }}</a>
     <span class="post-excerpt">{{ p.excerpt }}</span>
-    <div class="project-links">{% if p.url %}<a class="project-link" href="{{ p.github }}" target="_blank">Source code ↗</a>{% endif %}{% for link in p.links %}<a class="project-link" href="{{ link.url }}" target="_blank">{{ link.label }} ↗</a>{% endfor %}</div>
+    <div class="project-links">{% if p.url %}<a class="project-link" href="{{ p.github }}" target="_blank">Repository ↗</a>{% endif %}{% for link in p.links %}<a class="project-link" href="{{ link.url }}" target="_blank">{{ link.label }} ↗</a>{% endfor %}</div>
   </div>
 </div>
 {%- else -%}
