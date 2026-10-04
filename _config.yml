@@ -14,4 +14,4 @@ collections:
     output: false
     sort_by: order
 
-exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile', 'vendor']
+exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile', 'vendor', 'scripts']

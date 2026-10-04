@@ -16,6 +16,8 @@ assets/
   img/           # static images (e.g. project poster thumbnails)
 index.html       # homepage — hero · about · projects · writing
 cv.html          # standalone CV page at /cv
+scripts/
+  build_cv.py    # regenerates assets/Chaeyoon_Kim_CV.pdf (not published)
 _config.yml      # site metadata (title, url, plugins, collections)
 Gemfile          # Jekyll 4.3 + jekyll-feed, used by CI
 ```
@@ -40,7 +42,7 @@ Full Markdown content rendered on the site. Appears under **Reflections & projec
 ---
 layout: post
 type: reflection
-title: "What I learnt building the PWR elasticity model"
+title: "What I learnt building the NHS Policy Navigator"
 date: 2026-05-25
 summary: "One-line description shown on the homepage card."
 tags: [econometrics, NHS, panel-data]
@@ -100,6 +102,7 @@ title: "Project title"
 period: "May 2026"            # display string shown on the card (use 'period', not 'date')
 context: "Hackathon · NHS"   # shown after period with · separator
 github: "https://github.com/chaeyoonakim/your-repo"
+url: "https://your-app.example.com/"  # optional — live app; card opens it and shows a "Source code" pill for the repo
 badge: "In Progress"         # optional pill label (e.g. "1st Place", "In Progress")
 featured: true               # optional — spans full grid width, shows thumbnail
 thumb: "/assets/img/your-thumbnail.jpg"  # local path or absolute https:// URL
@@ -113,6 +116,17 @@ order: 6                     # controls display order (lower = first)
 - Use `period` not `date` — Jekyll tries to parse `date` as a Ruby date object.
 - `thumb` accepts a local path or an absolute URL. Pin external images to a commit SHA for stability.
 - CI validates every `thumb` value on each PR: external URLs via `curl --location`, local paths against built `_site/`.
+
+## Updating the CV
+
+The CV lives in two places: `cv.html` (the `/cv` page) and the downloadable
+`assets/Chaeyoon_Kim_CV.pdf`. Edit the text in both `cv.html` and
+`scripts/build_cv.py`, then regenerate the PDF:
+
+```bash
+pip install reportlab
+python scripts/build_cv.py
+```
 
 ## License
 
