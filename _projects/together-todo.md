@@ -10,5 +10,5 @@ links:
   - label: "Live app"
     url: "https://togethertodo.lovable.app/"
 group: more
-order: 1
+order: 2
 ---

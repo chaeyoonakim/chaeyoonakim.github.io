@@ -582,6 +582,9 @@ And do all three answers hold for every patient group, not just on average?
 
 ## Further reading on this site
 
+- [**Would my own models pass? Auditing five ML models against my evaluation checklist**](/2026/10/04/auditing-my-ml-models/)
+  — this checklist applied to every ML model in my repositories.
+
 - [**Predicting missed outpatient appointments: two case studies and what the evidence says**](/2026/10/04/predicting-missed-appointments-case-studies/)
   — these metrics applied to a real problem.
 - [**Accuracy matters, but usefulness matters more**](/2026/04/28/accuracy-matters-usefulness-more/)
