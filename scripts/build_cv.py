@@ -214,17 +214,17 @@ entry("Oxford AI Ethics, Regulation and Compliance Programme – Saïd Business 
 
 sec("VOLUNTEERING")
 story.append(Paragraph(b("The UK-Korea Global Health Forum working group:",
-    "organising a conference with senior researchers at the London School of Hygiene &amp; Tropical Medicine (LSHTM)."),
+    "organised a conference with senior researchers at the London School of Hygiene &amp; Tropical Medicine (LSHTM)."),
     plain))
 story.append(Paragraph(b("Professional Mentor at the University of Greenwich, and City St George’s, University of London:",
-    "supporting early career interview preparation for 3+ years; recognised at City St George’s 2025 Professional "
+    "supported early career interview preparation for 3+ years; recognised at City St George’s 2025 Professional "
     f"Mentoring Awards and featured in the alumni article “{link('A great mentor is both generous and curious', 'https://blogs.city.ac.uk/city-alumni/2025/10/28/celebrating-professional-mentoring-a-great-mentor-is-both-generous-and-curious/')}”."), plain))
 story.append(Paragraph(b("Global Ambassador at LangChain:",
-    "hosting technical meetups and organising a hackathon in central London; collaborated with AI builder "
+    "hosted technical meetups and organised a hackathon in central London; collaborated with AI builder "
     "communities across North and South America (including Halifax and Buenos Aires) in 2025, and with engineering "
     "communities across Europe (including Amsterdam, Munich, Zurich, Stockholm and Paris) in 2026."), plain))
 story.append(Paragraph(b("Conference and community organiser:",
-    "volunteer at PyCon UK and other leading UK technology conferences; planned or helped run local meetups "
+    "volunteered at PyCon UK and other leading UK technology conferences; planned or helped run local meetups "
     "ranging from 50 to 600+ attendees."), plain))
 
 out = sys.argv[1] if len(sys.argv) > 1 else "assets/Chaeyoon_Kim_CV.pdf"
